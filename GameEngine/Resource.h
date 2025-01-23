@@ -21,6 +21,11 @@ public:
 
 	//Members
 	static ObjectPool<Resource>* Pool;
+
+protected:
+	void SerializerPointer(std::ostream& _stream, Resource* _pointer);
+	void DeserializePointer(std::istream& _stream, Resource*& _pointer);
+
 private:
 	int m_val1;
 	double m_val2;

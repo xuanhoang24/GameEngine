@@ -11,6 +11,7 @@
 #include <cinttypes>
 #include <stdio.h>
 #include <thread>
+#include <map>
 
 //Poject headers
 #include "Singleton.h"

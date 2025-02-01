@@ -15,7 +15,7 @@ public:
 	{
 		for (unsigned int count = 0; count < m_all.size(); count++)
 		{
-			cout << "Deleting pool object" << endl;
+			cout << "Deleting pool object" << typeid(T).name() << endl;
 			delete m_all[count];
 		}
 		m_all.clear();
@@ -27,14 +27,14 @@ public:
 	{
 		if (m_available.empty())
 		{
-			cout << "Creating new pool object." << endl;
+			cout << "Creating new pool object." << typeid(T).name() << endl;
 			T* resource = new T();
 			m_all.push_back(resource);
 			return resource;
 		}
 		else
 		{
-			cout << "Reusing existin pool object." << endl;
+			cout << "Reusing existin pool object." << typeid(T).name() << endl;
 			T* resource = m_available[0];
 			m_available.erase(m_available.begin());
 			return resource;

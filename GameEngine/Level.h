@@ -22,6 +22,7 @@ private:
 	int m_mapSizeY;
 	float m_gameTime;
 	Unit* m_unit;
+	vector<Unit*> m_units;
 	// Add other interseting level members
 };
 

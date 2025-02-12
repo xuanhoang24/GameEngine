@@ -30,7 +30,7 @@ void GameController::RunGame()
         for (unsigned int count = 0; count < 6; count++)
         {
             unsigned int xPos = count * 69;
-            r->RenderTexture(texture, Rect(xPos, 0, xPos + 69, 44), Rect(xPos, 100, xPos + 69, 144));
+            r->RenderTexture(texture, Rect(xPos, 0, xPos + 69, 44), Rect(xPos, 100, xPos + 69 * 2, 100 + 44 * 2));
         }
         SDL_RenderPresent(r->GetRenderer());
     }

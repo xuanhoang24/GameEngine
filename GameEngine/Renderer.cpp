@@ -5,6 +5,7 @@ Renderer::Renderer()
 {
     m_window = nullptr;
     m_renderer = nullptr;
+    m_srcRect = { };
     m_destRect = { };
     m_surface = nullptr;
     m_viewPort = { };
@@ -135,4 +136,20 @@ void Renderer::RenderTexture(Texture* _texture, Rect _rect)
     m_destRect.h = _rect.Y2 - _rect.Y1;
     M_ASSERT(((SDL_RenderCopyEx(m_renderer, GetSDLTexture(_texture),
         NULL, &m_destRect, 0, NULL, SDL_FLIP_VERTICAL)) >= 0), "Could not render texture");
+}
+
+void Renderer::RenderTexture(Texture* _texture, Rect _srcRect, Rect _destRect)
+{
+    m_destRect.x = _destRect.X1;
+    m_destRect.y = _destRect.Y1;
+    m_destRect.w = _destRect.X2 - _destRect.X1;
+    m_destRect.h = _destRect.Y2 - _destRect.Y1;
+
+    m_srcRect.x = _srcRect.X1;
+    m_srcRect.y = _texture->GetImageInfo()->Height - _srcRect.Y2;
+    m_srcRect.w = _srcRect.X2 - _srcRect.X1;
+    m_srcRect.h = _srcRect.Y2 - _srcRect.Y1;
+
+    M_ASSERT(((SDL_RenderCopyEx(m_renderer, GetSDLTexture(_texture),
+        &m_srcRect, &m_destRect, 0, NULL, SDL_FLIP_VERTICAL)) >= 0), "Could not render texture");
 }

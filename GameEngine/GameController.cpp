@@ -19,22 +19,19 @@ void GameController::RunGame()
 
     Texture::Pool = new ObjectPool<Texture>();
     Texture* texture = Texture::Pool->GetResource();
-    texture->Load("../Assets/Textures/Emoji.tga");
+    texture->Load("../Assets/Textures/Warrior.tga");
 
     while (m_sdlEvent.type != SDL_QUIT)
     {
         SDL_PollEvent(&m_sdlEvent);
         r->SetViewport(Rect(0, 0, ws.X, ws.Y));
-        r->SetDrawColor(Color(255, 0, 0, 255));
+        r->SetDrawColor(Color(255, 255, 255, 255));
         r->ClearScreen();
-        r->SetViewport(Rect(0, 0, ws.X / 2, ws.Y / 2)); //Top-left
-        r->RenderTexture(texture, Point(0, 0));
-        r->SetViewport(Rect(ws.X / 2, 0, ws.X, ws.Y / 2)); //Top-right
-        r->RenderTexture(texture, Rect(0, 0, ws.X / 2, ws.Y / 2));
-        r->SetViewport(Rect(0, ws.Y/2, ws.X/2, ws.Y)); //Bottom-left
-        r->RenderTexture(texture, Rect(0, 0, ws.X / 2, ws.Y / 2));
-        r->SetViewport(Rect(ws.X / 2, ws.Y / 2, ws.X, ws.Y)); //Bottom-right
-        r->RenderTexture(texture, Point(0, 0));
+        for (unsigned int count = 0; count < 6; count++)
+        {
+            unsigned int xPos = count * 69;
+            r->RenderTexture(texture, Rect(xPos, 0, xPos + 69, 44), Rect(xPos, 100, xPos + 69, 144));
+        }
         SDL_RenderPresent(r->GetRenderer());
     }
 

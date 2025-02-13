@@ -90,3 +90,12 @@ void SpriteSheet::ToString()
 	cout << " ClipSizeY: " << (int)m_clipSizeY << endl;
 	Resource::ToString();
 }
+
+int SpriteSheet::GetCurrentClip(AnimationNames _name)
+{
+	if (m_animations.count(_name) < 0)
+	{
+		return 0;
+	}
+	return m_animations[_name]->GetClipCurrent();
+}

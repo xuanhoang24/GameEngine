@@ -31,6 +31,13 @@ void GameController::RunGame()
     sheet->Serialize(writeStream);
     writeStream.close();
 
+    delete SpriteAnim::Pool;
+    delete SpriteSheet::Pool;
+    AssetController::Instance().Clear();
+    AssetController::Instance().Initialize(10000000); //Allocate 10MB
+    SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
+    SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
+
     SpriteSheet* sheet2 = SpriteSheet::Pool->GetResource();
     ifstream readStream("resource.bin", ios::in | ios::binary);
     sheet2->Deserialize(readStream);

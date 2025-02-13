@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "SpriteAnim.h"
 #include "SpriteSheet.h"
+#include "TTFont.h"
 
 GameController::GameController()
 {
@@ -17,6 +18,10 @@ void GameController::RunGame()
     AssetController::Instance().Initialize(10000000); // Allocate 10MB
     Renderer* r = &Renderer::Instance();
     r->Initialize(800, 600);
+
+    TTFont* font = new TTFont();
+    font->Initialize(20);
+
     Point ws = r->GetWindowSize();
 
     SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
@@ -50,12 +55,14 @@ void GameController::RunGame()
         r->ClearScreen();
         r->RenderTexture(sheet2, sheet2->Update(EN_AN_IDLE), Rect(0, 0, 69 * 3, 44 * 3));
         r->RenderTexture(sheet2, sheet2->Update(EN_AN_RUN), Rect(0, 150, 69 * 3, 150 + 44 * 3));
+        font->Write(r->GetRenderer(), "Testing 123!!", SDL_Color{ 0,255,0 }, SDL_Point{ 150,50 });
 
         SDL_RenderPresent(r->GetRenderer());
     }
 
     delete SpriteAnim::Pool;
     delete SpriteSheet::Pool;
-
+    
+    font->Shutdown();
     r->Shutdown();
 }

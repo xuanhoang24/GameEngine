@@ -13,6 +13,8 @@
 #include <thread>
 #include <map>
 #include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_pixels.h>
 
 //Poject headers
 #include "Singleton.h"

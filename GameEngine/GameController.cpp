@@ -33,8 +33,6 @@ void GameController::RunGame()
     sheet->SetSize(17, 6, 69, 44);
     sheet->AddAnimation(EN_AN_IDLE, 0, 6, 6.0f);
     sheet->AddAnimation(EN_AN_RUN, 6, 8, 6.0f);
-    sheet->SetBlendMode(SDL_BLENDMODE_BLEND);
-    sheet->SetBlendAlpha(128);
 
     ofstream writeStream("resource.bin", ios::out | ios::binary);
     sheet->Serialize(writeStream);
@@ -73,6 +71,8 @@ void GameController::RunGame()
         font->Write(r->GetRenderer(), fps.c_str(), SDL_Color{ 0,0,255 }, SDL_Point{ 0,0 });
 
         SDL_RenderPresent(r->GetRenderer());
+
+        t->CapFPS();
     }
 
     delete SpriteAnim::Pool;

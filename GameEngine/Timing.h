@@ -16,6 +16,8 @@ public:
 
 	//Methods
 	void Tick();
+	void SetFPS(int _fps);
+	void CapFPS();
 
 private:
 	unsigned int m_currentTime;
@@ -24,6 +26,8 @@ private:
 	unsigned int m_fpsCount;
 	unsigned int m_fpsLast;
 	float m_deltaTime;
+	unsigned int m_targetFPS;
+	unsigned int m_tickPerFrame;
 };
 
 #endif // TIMING_H

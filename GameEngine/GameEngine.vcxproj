@@ -138,6 +138,8 @@ copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64\SDL2_ttf.dll" "$(TargetD
     <ClCompile Include="AssetController.cpp" />
     <ClCompile Include="FileController.cpp" />
     <ClCompile Include="GameController.cpp" />
+    <ClCompile Include="InputController.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -159,6 +161,8 @@ copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64\SDL2_ttf.dll" "$(TargetD
     <ClInclude Include="BasicStructs.h" />
     <ClInclude Include="FileController.h" />
     <ClInclude Include="GameController.h" />
+    <ClInclude Include="InputController.h" />
+    <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="Renderer.h" />

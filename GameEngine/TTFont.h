@@ -10,7 +10,7 @@ class TTFont
 public:
 	//Constructors/ Destructors
 	TTFont();
-	virtual ~TTFont() { }
+	virtual ~TTFont();
 
 	//Methods
 	void Initialize(int _pointSize);

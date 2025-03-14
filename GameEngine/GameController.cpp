@@ -58,9 +58,7 @@ void GameController::HandleInput(SDL_Event _event)
         m_smPos = "Mouse Position [" + to_string(m_mPos.X) + ";" + to_string(m_mPos.Y) + "]";
     }
     else if ((m_input->CT()->Added(m_sdlEvent)) ||
-        (m_input->CT()->Removed(m_sdlEvent)) ||
-        (m_input->CT()->ProcessButtons(m_sdlEvent)) ||
-        (m_input->CT()->ProcessMotion(m_sdlEvent)))
+        (m_input->CT()->Removed(m_sdlEvent)))
     {
         m_ctInfo = m_input->CT()->ToString();
     }
@@ -84,7 +82,7 @@ void GameController::RunGame()
         }
 
         m_fArial20->Write(m_renderer->GetRenderer(), m_text.c_str(), SDL_Color{ 0,255,0 }, SDL_Point{ 250,200 });
-        m_fArial20->Write(m_renderer->GetRenderer(), m_smPos.c_str(), SDL_Color{ 0,0,255 }, SDL_Point{ 250,200 });
+        m_fArial20->Write(m_renderer->GetRenderer(), m_smPos.c_str(), SDL_Color{ 0,0,255 }, SDL_Point{ 250,220 });
         m_fArial20->Write(m_renderer->GetRenderer(), ("Left: " + to_string(m_input->MS()->GetButLDown())).c_str(), SDL_Color{ 0,0,255 }, SDL_Point{ 250,240 });
         m_fArial20->Write(m_renderer->GetRenderer(), ("Middle: " + to_string(m_input->MS()->GetButMDown())).c_str(), SDL_Color{ 0,0,255 }, SDL_Point{ 250,260 });
         m_fArial20->Write(m_renderer->GetRenderer(), ("Right: " + to_string(m_input->MS()->GetButRDown())).c_str(), SDL_Color{ 0,0,255 }, SDL_Point{ 250,280 });

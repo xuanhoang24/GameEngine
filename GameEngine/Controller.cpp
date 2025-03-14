@@ -26,7 +26,7 @@ void Controller::Add(SDL_GameController* _controller, int _controllerID)
 	if (_controller == nullptr) return;
 
 	SDL_Joystick* j = SDL_GameControllerGetJoystick(_controller);
-	SDL_JoystickID jID = SDL_JoystickInstanceID(j); // _controllerID
+	SDL_JoystickID jID = SDL_JoystickInstanceID(j); // _controllerID is not to be used as a unique ID
 	for (ControllerInfo c : m_controllers)
 	{
 		if (c.ID == jID) return;

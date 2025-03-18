@@ -6,6 +6,9 @@
 class Renderer;
 class TTFont;
 class InputController;
+class AudioController;
+class SoundEffect;
+class Song;
 
 class GameController : public Singleton<GameController>
 {
@@ -27,10 +30,9 @@ private:
     TTFont* m_fArial20;
     bool m_quit;
     InputController* m_input;
-    string m_text;
-    string m_smPos;
-    Point m_mPos;
-    string m_ctInfo;
+    AudioController* m_audio;
+    SoundEffect* m_effect;
+    Song* m_song;
 };
 
 #endif // GAME_CONTROLLER_H

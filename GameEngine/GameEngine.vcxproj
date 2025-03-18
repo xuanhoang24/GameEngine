@@ -104,17 +104,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL2-2.26.1\include;$(SolutionDir)External\SDL2_ttf-2.20.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\SDL2-2.26.1\include;$(SolutionDir)External\SDL2_ttf-2.20.1\include;$(SolutionDir)External\SDL2_mixer-2.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL2-2.26.1\lib\x64;$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)External\SDL2-2.26.1\lib\x64;$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64;$(SolutionDir)External\SDL2_mixer-2.8.1\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>copy /Y "$(SolutionDir)External\SDL2-2.26.1\lib\x64\SDL2.dll" "$(TargetDir)"
-copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64\SDL2_ttf.dll" "$(TargetDir)"</Command>
+copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64\SDL2_ttf.dll" "$(TargetDir)"
+copy /Y "$(SolutionDir)External\SDL2_mixer-2.8.1\lib\x64\SDL2_mixer.dll" "$(TargetDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,6 +137,7 @@ copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64\SDL2_ttf.dll" "$(TargetD
   <ItemGroup>
     <ClCompile Include="Asset.cpp" />
     <ClCompile Include="AssetController.cpp" />
+    <ClCompile Include="AudioController.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="FileController.cpp" />
     <ClCompile Include="GameController.cpp" />
@@ -147,6 +149,7 @@ copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64\SDL2_ttf.dll" "$(TargetD
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="Song.cpp" />
     <ClCompile Include="SoundEffect.cpp" />
     <ClCompile Include="SpriteAnim.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
@@ -160,6 +163,7 @@ copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64\SDL2_ttf.dll" "$(TargetD
   <ItemGroup>
     <ClInclude Include="Asset.h" />
     <ClInclude Include="AssetController.h" />
+    <ClInclude Include="AudioController.h" />
     <ClInclude Include="BasicStructs.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="FileController.h" />
@@ -174,6 +178,7 @@ copy /Y "$(SolutionDir)External\SDL2_ttf-2.20.1\lib\x64\SDL2_ttf.dll" "$(TargetD
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Serializable.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Song.h" />
     <ClInclude Include="SoundEffect.h" />
     <ClInclude Include="SpriteAnim.h" />
     <ClInclude Include="SpriteSheet.h" />

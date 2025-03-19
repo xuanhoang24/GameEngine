@@ -33,8 +33,8 @@ public:
 
 private:
 	// Methods
-	Mix_Chunk* GetSDLSoundEffect(SoundEffect* _effect);
-	Mix_Music* GetSDLSong(Song* _song);
+	Mix_Chunk* GetSDLSFX(SoundEffect* _effect);
+	Mix_Music* GetSDLMusic(Song* _song);
 
 	// Members
 	map<string, Mix_Chunk*> m_effects;

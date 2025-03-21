@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <thread>
 #include <map>
+#include <algorithm>
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL_pixels.h>

@@ -7,7 +7,7 @@
 #include "Controller.h"
 #include "AudioController.h"
 #include "SoundEffect.h"
-#include "Song.h"
+#include "WavDraw.h"
 
 GameController::GameController()
 {
@@ -17,8 +17,9 @@ GameController::GameController()
     m_input = nullptr;
     m_quit = false;
     m_audio = nullptr;
+    m_wavDraw = nullptr;
     memset(m_effects, 0, sizeof(SoundEffect*) * MaxEffectChannels);
-    m_song = nullptr;
+    m_zoomY = 5;
 }
 
 GameController::~GameController()
@@ -35,17 +36,14 @@ void GameController::Initialize()
     m_fArial20 = new TTFont();
     m_fArial20->Initialize(20);
     m_audio = &AudioController::Instance();
+    m_wavDraw = new WavDraw();
     m_effects[0] = m_audio->LoadEffect("../Assets/Audio/Effects/Whoosh.wav");
-    m_effects[1] = m_audio->LoadEffect("../Assets/Audio/Effects/BeeFlyingLoop.mp3");
-    m_effects[2] = m_audio->LoadEffect("../Assets/Audio/Effects/DistantGunshot.mp3");
-    m_effects[3] = m_audio->LoadEffect("../Assets/Audio/Effects/DrinkSipSwallow.mp3");
-
-    m_song = m_audio->LoadSong("../Assets/Audio/Music/Track1.mp3");
 }
 
 void GameController::ShutDown()
 {
     delete m_fArial20;
+    delete m_wavDraw;
 }
 
 void GameController::HandleInput(SDL_Event _event)
@@ -56,27 +54,15 @@ void GameController::HandleInput(SDL_Event _event)
     {
         m_quit = true;
     }
-    else if (m_input->KB()->KeyUp(_event, SDLK_p))
-    {
-        m_audio->Play(m_effects[rand() % 4]);
-    }
     else if (m_input->KB()->KeyUp(_event, SDLK_a))
     {
-        m_audio->Play(m_song);
+        m_zoomY += 0.5f;
     }
     else if (m_input->KB()->KeyUp(_event, SDLK_s))
     {
-        m_audio->PauseMusic();
+        m_zoomY -= 0.5f;
     }
-    else if (m_input->KB()->KeyUp(_event, SDLK_d))
-    {
-        m_audio->ResumeMusic();
-    }
-    else if (m_input->KB()->KeyUp(_event, SDLK_f))
-    {
-        m_audio->StopMusic();
-    }
-        
+
     m_input->MS()->ProcessButtons(_event);
 }
 
@@ -94,18 +80,7 @@ void GameController::RunGame()
             HandleInput(m_sdlEvent);
         }
 
-        string song = "Current Song: " + m_audio->GetMusicTitle();
-        if (m_audio->GetMusicLength() != "")
-        {
-            song += " " + to_string((int)m_audio->MusicPosition()) + "/" + m_audio->GetMusicLength();
-        }
-        m_fArial20->Write(m_renderer->GetRenderer(), song.c_str(), { 0,0,255 }, { 10,10 });
-        for (int count = 0; count < MaxEffectChannels; count++) 
-        {
-            string eff = "Effect " + to_string(count) + ": ";
-            eff += m_audio->GetCurrentEffect()[count];
-            m_fArial20->Write(m_renderer->GetRenderer(), eff.c_str(), { 255,0,255 }, { 10,30 + (count * 20) });
-        }
+        m_wavDraw->DrawWave(m_effects[0]->GetData(), m_renderer, m_zoomY);
         SDL_RenderPresent(m_renderer->GetRenderer());
     }
 }

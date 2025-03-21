@@ -159,6 +159,7 @@ copy /Y "$(SolutionDir)External\SDL2_mixer-2.8.1\lib\x64\SDL2_mixer.dll" "$(Targ
     <ClCompile Include="Timing.cpp" />
     <ClCompile Include="TTFont.cpp" />
     <ClCompile Include="Unit.cpp" />
+    <ClCompile Include="WavDraw.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset.h" />
@@ -189,6 +190,7 @@ copy /Y "$(SolutionDir)External\SDL2_mixer-2.8.1\lib\x64\SDL2_mixer.dll" "$(Targ
     <ClInclude Include="Timing.h" />
     <ClInclude Include="TTFont.h" />
     <ClInclude Include="Unit.h" />
+    <ClInclude Include="WavDraw.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="File1.txt" />

@@ -2,6 +2,7 @@
 #define STANDARD_INLCUDES_H
 
 #define SDL_MAIN_HANDLED
+#define GLM_ENABLE_EXPERIMENTAL
 
 #define NATIVE_XRES 1920
 #define NATIVE_YRES 1080
@@ -20,7 +21,8 @@
 #include <SDL_ttf.h>
 #include <SDL_pixels.h>
 #include <SDL_mixer.h>
-
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 //Poject headers
 #include "Singleton.h"
 #include "BasicStructs.h"

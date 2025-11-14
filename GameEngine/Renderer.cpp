@@ -20,8 +20,8 @@ void Renderer::Initialize()
 {
     M_ASSERT((SDL_Init(SDL_INIT_EVERYTHING) >= 0), "SDL initialization failed.");
     SDL_GetDisplayBounds(0, &m_srcRect);
-    m_window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        m_srcRect.w, m_srcRect.h, SDL_WINDOW_FULLSCREEN);
+    m_window = SDL_CreateWindow("Endless Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        1280, 720, SDL_WINDOW_SHOWN);
     M_ASSERT(m_window != nullptr, "Failed to initialize SDL window.");
     m_renderer = SDL_CreateRenderer(m_window, -1, 0);
     M_ASSERT(m_renderer != nullptr, "Failed to initialize SDL renderer.");

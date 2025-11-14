@@ -11,6 +11,7 @@ class AudioController;
 class SoundEffect;
 class Song;
 class WavDraw;
+class Player;
 
 class GameController : public Singleton<GameController>
 {
@@ -29,13 +30,9 @@ private:
     //Members
     SDL_Event m_sdlEvent;
     Renderer* m_renderer;
-    TTFont* m_fArial20;
-    bool m_quit;
     InputController* m_input;
-    AudioController* m_audio;
-    WavDraw* m_wavDraw;
-    SoundEffect* m_effects[MaxEffectChannels];
-    float m_zoomY;
+    Player* m_player;
+    bool m_quit;
 };
 
 #endif // GAME_CONTROLLER_H

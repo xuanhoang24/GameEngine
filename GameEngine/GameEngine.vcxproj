@@ -146,6 +146,7 @@ copy /Y "$(SolutionDir)External\SDL2_mixer-2.8.1\lib\x64\SDL2_mixer.dll" "$(Targ
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Resource.cpp" />
@@ -174,6 +175,7 @@ copy /Y "$(SolutionDir)External\SDL2_mixer-2.8.1\lib\x64\SDL2_mixer.dll" "$(Targ
     <ClInclude Include="Level.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="ObjectPool.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Resource.h" />

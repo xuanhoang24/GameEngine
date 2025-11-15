@@ -17,6 +17,7 @@ Player::Player()
 	m_veloY = 0;
 	m_isRunning = false;
 	m_shiftDown = false;
+	m_facingRight = true;
 
 	// Gravity
 	m_gravity = 980.0f;
@@ -63,7 +64,7 @@ void Player::Update(float _deltaTime)
 
 #pragma region Animation Logic
 	if (m_veloX == 0)
-		m_sprite->Update(EN_AN_RUN, _deltaTime);
+		m_sprite->Update(EN_AN_IDLE, _deltaTime);
 	else if (m_isRunning)
 		m_sprite->Update(EN_AN_RUN, _deltaTime);
 	else
@@ -125,8 +126,21 @@ void Player::Render(Renderer* _renderer)
 	float y = m_position.Y;
 
 	// Destination on the screen
-	Rect destRect( (unsigned)x, (unsigned)y,
-		(unsigned)(x + width), (unsigned)(y + height));
+	Rect destRect( 
+		(unsigned)x, 
+		(unsigned)y,
+		(unsigned)(x + width), 
+		(unsigned)(y + height));
+
+	if (!m_facingRight)
+	{
+		destRect = Rect(
+			(unsigned)(x + width),
+			(unsigned)y,
+			(unsigned)x,
+			(unsigned)(y + height)
+		);
+	}
 
 	// Get the part of the sprite sheet for the current animation frame
 	Rect srcRect(0, 0, 0, 0);
@@ -157,12 +171,14 @@ void Player::HandleInput(SDL_Event _event)
 	{
 		m_veloX = -speed;
 		m_isRunning = m_shiftDown;
+		m_facingRight = false;
 	}
 	// D Key
 	else if (keyState[SDL_SCANCODE_D])
 	{
 		m_veloX = speed;
 		m_isRunning = m_shiftDown;
+		m_facingRight = true;
 	}
 	else // Relase A or D
 	{

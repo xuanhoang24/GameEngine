@@ -29,6 +29,7 @@ private:
 	float m_veloY;
 	bool m_isRunning;
 	bool m_shiftDown;
+	bool m_facingRight;
 
 	// Gravity
 	float m_gravity;

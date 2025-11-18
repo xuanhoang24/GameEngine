@@ -3,7 +3,6 @@
 
 #include "StandardIncludes.h"
 #include "AudioController.h"
-#include "Platform.h"
 
 class Renderer;
 class TTFont;
@@ -33,7 +32,6 @@ private:
     Renderer* m_renderer;
     InputController* m_input;
     Player* m_player;
-    vector<Platform*> m_platforms;
 
     bool m_quit;
 };

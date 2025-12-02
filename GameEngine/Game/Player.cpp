@@ -1,4 +1,5 @@
 #include "../Game/Player.h"
+#include "../Game/GameMap.h"
 #include "../Resources/FileController.h"
 #include "../Core/Timing.h"
 #include "../Input/InputController.h"
@@ -23,6 +24,9 @@ Player::Player()
 	m_gravity = 980.0f;
 	m_groundY = 500.0f; // Temp
 	m_isGrounded = false;
+
+	// Map
+	m_gameMap = nullptr;
 
 	// Jump
 	m_jumpPressed = false;
@@ -71,10 +75,15 @@ void Player::Update(float _deltaTime)
 		m_sprite->Update(EN_AN_IDLE, _deltaTime);
 #pragma endregion Animation Logic
 
-	// Ground Collision
-	if (m_position.Y >= m_groundY)
+	// Ground Collision with tilemap
+
+	float width = GetWidth();
+	float height = GetHeight();
+	float groundY = m_gameMap->GetGroundY(m_position.X, m_position.Y, width, height);
+
+	if (m_position.Y + height >= groundY) // Check if bottom ( top + heigh ) of player sprite is on the ground, prevent falling.
 	{
-		m_position.Y = m_groundY;
+		m_position.Y = groundY - height; // Set the player top on the ground, if not player top will inside the ground
 		m_veloY = 0;
 		m_isGrounded = true;
 		m_isJumping = false;
@@ -88,7 +97,7 @@ void Player::Update(float _deltaTime)
 	if (m_isGrounded)
 	{
 		// Reset coyote timer
-		m_coyoteTimer = m_coyoteTime; 
+		m_coyoteTimer = m_coyoteTime;
 	}
 	else
 	{
@@ -126,10 +135,10 @@ void Player::Render(Renderer* _renderer)
 	float y = m_position.Y;
 
 	// Destination on the screen
-	Rect destRect( 
-		(unsigned)x, 
+	Rect destRect(
+		(unsigned)x,
 		(unsigned)y,
-		(unsigned)(x + width), 
+		(unsigned)(x + width),
 		(unsigned)(y + height));
 
 	if (!m_facingRight)
@@ -167,7 +176,7 @@ void Player::HandleInput(SDL_Event _event)
 	// SHIFT DOWN
 	m_shiftDown = keyState[SDL_SCANCODE_LSHIFT] || keyState[SDL_SCANCODE_RSHIFT];
 	// A Key
-	if (keyState[SDL_SCANCODE_A]) 
+	if (keyState[SDL_SCANCODE_A])
 	{
 		m_veloX = -speed;
 		m_isRunning = m_shiftDown;

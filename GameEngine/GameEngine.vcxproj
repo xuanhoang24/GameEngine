@@ -135,7 +135,6 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  
   <!-- Core Files -->
   <ItemGroup>
     <ClCompile Include="Core\main.cpp" />
@@ -149,7 +148,6 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClInclude Include="Core\Singleton.h" />
     <ClInclude Include="Core\BasicStructs.h" />
   </ItemGroup>
-  
   <!-- Graphics Files -->
   <ItemGroup>
     <ClCompile Include="Graphics\Renderer.cpp" />
@@ -177,7 +175,6 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClInclude Include="Graphics\PNGReader.h" />
     <ClInclude Include="Graphics\WavDraw.h" />
   </ItemGroup>
-  
   <!-- Audio Files -->
   <ItemGroup>
     <ClCompile Include="Audio\AudioController.cpp" />
@@ -189,7 +186,6 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClInclude Include="Audio\SoundEffect.h" />
     <ClInclude Include="Audio\Song.h" />
   </ItemGroup>
-  
   <!-- Input Files -->
   <ItemGroup>
     <ClCompile Include="Input\InputController.cpp" />
@@ -203,7 +199,6 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClInclude Include="Input\Mouse.h" />
     <ClInclude Include="Input\Controller.h" />
   </ItemGroup>
-  
   <!-- Resources Files -->
   <ItemGroup>
     <ClCompile Include="Resources\AssetController.cpp" />
@@ -218,7 +213,6 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClInclude Include="Resources\Resource.h" />
     <ClInclude Include="Resources\Serializable.h" />
   </ItemGroup>
-  
   <!-- Utils Files -->
   <ItemGroup>
     <ClCompile Include="Utils\StackAllocator.cpp" />
@@ -227,7 +221,6 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClInclude Include="Utils\StackAllocator.h" />
     <ClInclude Include="Utils\ObjectPool.h" />
   </ItemGroup>
-  
   <!-- Game Files -->
   <ItemGroup>
     <ClCompile Include="Game\Player.cpp" />
@@ -241,7 +234,6 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClInclude Include="Game\Level.h" />
     <ClInclude Include="Game\Unit.h" />
   </ItemGroup>
-  
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

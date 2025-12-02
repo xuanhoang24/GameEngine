@@ -15,6 +15,23 @@ public:
 
     bool Load(const string& _path);
     void Render(Renderer* _renderer);
+    
+    // Collision
+    bool IsTileSolid(int _tileX, int _tileY) const;
+    bool CheckCollision(float _x, float _y, float _width, float _height) const;
+    float GetGroundY(float _x, float _y, float _width, float _height) const;
+    
+    // Getters
+    int GetMapWidth() const { return m_mapWidth; }
+    int GetMapHeight() const { return m_mapHeight; }
+    int GetTileWidth() const { return m_tileWidth; }
+    int GetTileHeight() const { return m_tileHeight; }
+    int GetMapPixelWidth() const { return m_mapWidth * m_tileWidth; }
+    int GetMapPixelHeight() const { return m_mapHeight * m_tileHeight; }
+    int GetYOffset() const { return m_yOffset; }
+    
+    // Setters
+    void SetYOffset(int _yOffset) { m_yOffset = _yOffset; }
 
 private:
     struct TilesetInfo
@@ -51,6 +68,7 @@ private:
     int m_mapHeight = 0;
     int m_tileWidth = 0;
     int m_tileHeight = 0;
+    int m_yOffset = 0;
 };
 
 #endif // TILE_MAP_H

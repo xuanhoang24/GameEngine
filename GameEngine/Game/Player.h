@@ -5,6 +5,8 @@
 #include "../Graphics/Renderer.h"
 #include "../Graphics/SpriteSheet.h"
 
+class GameMap;
+
 class Player
 {
 public:
@@ -15,10 +17,14 @@ public:
 	void Update(float _deltaTime);
 	void Render(Renderer* _renderer);
 	void HandleInput(SDL_Event _event);
+	void SetGameMap(GameMap* _map) { m_gameMap = _map; }
+	
+	float GetWidth() const { return 69 * scale; }
+	float GetHeight() const { return 44 * scale; }
 
 private:
 	SpriteSheet* m_sprite;
-	Point m_position;
+	Point m_position; // Y represent top-left (or top) of the sprite, X represent left horizontal of the sprite
 
 	float scale;
 	
@@ -35,6 +41,9 @@ private:
 	float m_gravity;
 	bool m_isGrounded;
 	float m_groundY;
+	
+	// Map reference
+	GameMap* m_gameMap;
 
 	// Jump
 	bool m_jumpPressed;

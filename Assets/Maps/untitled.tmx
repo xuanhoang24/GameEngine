@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="1">
  <tileset firstgid="1" name="Assets" tilewidth="16" tileheight="16" tilecount="625" columns="25">
-  <image source="Images/Tilemap/Assets.png" width="400" height="400"/>
+  <image source="../../../../../GameEngine/Assets/Maps/Images/Tilemap/Assets.png" width="400" height="400"/>
  </tileset>
- <layer id="1" name="Tile Layer 1" width="15" height="15">
+ <layer id="1" name="Tile Layer 1" width="30" height="20">
   <data encoding="base64" compression="zlib">
-   eJztzcsJgDAQRdEsBP8tiP8OEnFlB2r/1XgDBoYQJXsdOEzC8HhK/fOFSZEhR4ESFeqIbIsOPQaMmDBH5FZonPc2WLC95F2fzez3Np6nftmhA3/3bpB4bNcherUgb0uAvLu8JG++CzLjEDo=
+   eJxjYBgFo2AUjIKhAcKBOIKO9oUCcRgQFwBxIR3tbUdiD5S9XXS0Nw+J3UlALQsWLI9FnTSSPCF7sZmJjs1xYHSATw7dXlMKMDn2dtDYXkJhSCt7CeGBshcAH0gbmQ==
   </data>
  </layer>
- <layer id="2" name="Tile Layer 2" width="15" height="15">
+ <layer id="2" name="Tile Layer 2" width="30" height="20">
   <data encoding="base64" compression="zlib">
-   eJxjYBi8oIqRgaEaCdcAcS0jYX2TgGomA/EUIF4LpacC8TQcekOBOAyIw4F4NVDNGiR9IHodEK/HoTcPiPOBuACIjwDVHAXiY1B9MIxLbzsSuwuINwDVbQTizUC8BYi3AfF2IvXCwBmg+rNEhBE2vTB7iQWdFNiLDGD2CgLZQiTqhdmrBWRrk2f9gAMAcncipg==
+   eJxjYBgFo2AUjIJRMAoGHvABsQYadhpQFw1NwAfFDkDMD8UOUDkHrDpGAS0AABAoAes=
   </data>
  </layer>
- <layer id="3" name="Tile Layer 3" width="15" height="15">
+ <layer id="3" name="Tile Layer 3" width="30" height="20">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFyCCCAr2FVHPFyAJZQJwNxDlAnEuhXhnqOo0uAADM8ARC
-  </data>
- </layer>
- <layer id="4" name="Tile Layer 4" width="15" height="15">
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFAwUEgViITL1aQKxNRbdQAkKhOAyIw4E4ggS9eUjsAiAuJEFvOxq/iwS9gwkAAARrBIg=
+   eJxjYBgFo2AUjIJRMJSBIBALDYC9WkCsPQD2joJRMBQAAI/jAHk=
   </data>
  </layer>
 </map>

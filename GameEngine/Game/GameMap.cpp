@@ -23,18 +23,17 @@ void GameMap::Render(Renderer* _renderer)
         m_tileMap->Render(_renderer);
 }
 
-bool GameMap::CheckCollision(float _x, float _y, float _width, float _height) const
-{
-    if (m_tileMap)
-        return m_tileMap->CheckCollision(_x, _y, _width, _height);
-    return false;
-}
-
 float GameMap::GetGroundY(float _x, float _y, float _width, float _height) const
 {
     if (m_tileMap)
         return m_tileMap->GetGroundY(_x, _y, _width, _height);
     return 10000.0f;
+}
+
+bool GameMap::CheckGround(float _x, float _y, float _width, float _height, float& _outGroundY) const
+{
+    if (!m_tileMap) return false;
+    return m_tileMap->CheckGroundCollision(_x, _y, _width, _height, _outGroundY);
 }
 
 int GameMap::GetMapPixelWidth() const

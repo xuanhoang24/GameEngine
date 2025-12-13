@@ -297,11 +297,15 @@ bool TileMap::IsTileSolid(int _tileX, int _tileY) const
     if (_tileX < 0 || _tileX >= m_mapWidth || _tileY < 0 || _tileY >= m_mapHeight)
         return false;
 
-    // Check all layers for solid tiles
+    // Only check the "ground" layer for solid tiles
     for (const auto& li : m_layers)
     {
         const auto* layer = li.layer;
         if (!layer) continue;
+
+        // Only check layers named "ground" for collision
+        string layerName = layer->getName();
+        if (layerName != "ground") continue;
 
         const auto& tiles = layer->getTiles();
         int index = _tileX + _tileY * m_mapWidth;
@@ -309,31 +313,8 @@ bool TileMap::IsTileSolid(int _tileX, int _tileY) const
         if (index >= 0 && index < tiles.size())
         {
             int gid = tiles[index].ID;
-            // Any tile with a GID > 0 is considered solid (temp)
+            // Any tile with a GID > 0 in the ground layer is considered solid
             if (gid > 0)
-                return true;
-        }
-    }
-    
-    return false;
-}
-
-bool TileMap::CheckCollision(float _x, float _y, float _width, float _height) const
-{
-    // Convert world coordinates to tile coordinates (accounting for offset)
-    float adjustedY = _y - m_yOffset;
-    
-    int startX = (int)(_x / m_tileWidth);
-    int endX = (int)((_x + _width) / m_tileWidth);
-    int startY = (int)(adjustedY / m_tileHeight);
-    int endY = (int)((adjustedY + _height) / m_tileHeight);
-
-    // Check all tiles in the bounding box
-    for (int y = startY; y <= endY; ++y)
-    {
-        for (int x = startX; x <= endX; ++x)
-        {
-            if (IsTileSolid(x, y))
                 return true;
         }
     }
@@ -345,21 +326,41 @@ float TileMap::GetGroundY(float _x, float _y, float _width, float _height) const
 {
     // Convert world coordinates to tile coordinates
     float adjustedY = _y - m_yOffset;
+    float playerBottom = adjustedY + _height;
     
     int startX = (int)(_x / m_tileWidth);
     int endX = (int)((_x + _width) / m_tileWidth);
-    int checkY = (int)((adjustedY + _height) / m_tileHeight);
-
+    
+    // Start checking from the player's current position
+    int startCheckY = (int)(playerBottom / m_tileHeight);
+    int maxCheckY = startCheckY + 3; // Check 3 tiles below
+    
+    float closestGroundY = 10000.0f;
+    
     // Check tiles below the player
-    for (int x = startX; x <= endX; ++x)
+    for (int checkY = startCheckY; checkY <= maxCheckY; ++checkY)
     {
-        if (IsTileSolid(x, checkY))
+        for (int x = startX; x <= endX; ++x)
         {
-            // Return the top of the tile in world coordinates
-            return (checkY * m_tileHeight) + m_yOffset;
+            if (IsTileSolid(x, checkY))
+            {
+                // Calculate the exact top of this tile in world coordinates
+                float tileTopY = (checkY * m_tileHeight) + m_yOffset;
+                
+                // Only consider this ground if it's below the player
+                if (tileTopY >= _y + _height - 5.0f) // Small tolerance for smooth landing
+                {
+                    if (tileTopY < closestGroundY)
+                    {
+                        closestGroundY = tileTopY;
+                    }
+                }
+            }
         }
+        
+        if (closestGroundY < 10000.0f)
+            break;
     }
     
-    // No ground found, return a default far below
-    return 10000.0f;
+    return closestGroundY;
 }

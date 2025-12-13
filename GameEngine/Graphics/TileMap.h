@@ -5,6 +5,7 @@
 #include <tmxlite/Map.hpp>
 #include <tmxlite/TileLayer.hpp>
 #include <tmxlite/ObjectGroup.hpp>
+#include <tmxlite/ImageLayer.hpp>
 #include "../Graphics/Renderer.h"
 #include "../Graphics/Texture.h"
 #include "CollisionShape.h"
@@ -55,6 +56,13 @@ private:
         int imageHeight = 0;
     };
 
+    struct ImageLayerInfo
+    {
+        SDL_Texture* texture = nullptr;
+        int x = 0;
+        int y = 0;
+    };
+
     struct LayerInfo
     {
         const tmx::TileLayer* layer = nullptr;
@@ -63,6 +71,7 @@ private:
     // Methods
     void LoadTilesets();
     void LoadLayers(); 
+    void LoadImageLayers();
     void LoadCollisionObjects();
     TilesetInfo* FindTileset(int gid);
 
@@ -72,6 +81,7 @@ private:
     std::vector<TilesetInfo> m_tilesets;
     std::vector<LayerInfo>   m_layers;
     std::vector<CollisionShape> m_collisionShapes;
+    std::vector<ImageLayerInfo> m_imageLayers;
 
     // Map info
     int m_mapWidth = 0;

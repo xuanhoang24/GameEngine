@@ -23,6 +23,7 @@ bool TileMap::Load(const string& _path)
 
     // Load
     LoadTilesets();
+    LoadImageLayers();
     LoadLayers();
     LoadCollisionObjects();
 
@@ -91,6 +92,17 @@ void TileMap::Render(Renderer* _renderer)
 {
     SDL_Renderer* sdl = _renderer->GetRenderer();
 
+    // 1. Draw image layers (background)
+    for (const auto& img : m_imageLayers)
+    {
+        SDL_Rect dst;
+        dst.x = img.x;
+        dst.y = img.y + m_yOffset;
+        SDL_QueryTexture(img.texture, nullptr, nullptr, &dst.w, &dst.h);
+        SDL_RenderCopy(sdl, img.texture, nullptr, &dst);
+    }
+
+    // 2. Draw tile layers
     for (auto& li : m_layers)
     {
         const auto* layer = li.layer;
@@ -178,6 +190,48 @@ void TileMap::LoadCollisionObjects()
 
             m_collisionShapes.push_back(shape);
         }
+    }
+}
+
+void TileMap::LoadImageLayers()
+{
+    m_imageLayers.clear();
+
+    const auto& layers = m_map.getLayers();
+
+    for (size_t i = 0; i < layers.size(); ++i)
+    {
+        if (layers[i]->getType() != tmx::Layer::Type::Image)
+            continue;
+
+        const tmx::ImageLayer& imgLayer =
+            layers[i]->getLayerAs<tmx::ImageLayer>();
+
+        // Get the image file path defined in Tiled
+        string imgPath = imgLayer.getImagePath();
+        if (imgPath.empty())
+            continue;
+
+        SDL_Surface* surf = IMG_Load(imgPath.c_str());
+        if (!surf)
+            continue;
+
+        SDL_Renderer* sdl = Renderer::Instance().GetRenderer();
+        SDL_Texture* tex = SDL_CreateTextureFromSurface(sdl, surf);
+        SDL_FreeSurface(surf);
+
+        if (!tex)
+            continue;
+
+        // Get the image layer offset set in Tiled
+        auto offset = imgLayer.getOffset();
+
+        ImageLayerInfo info;
+        info.texture = tex;
+        info.x = (int)offset.x;
+        info.y = (int)offset.y;
+
+        m_imageLayers.push_back(info);
     }
 }
 

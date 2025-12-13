@@ -21,7 +21,6 @@ public:
     
     // Collision
     bool CheckGroundCollision(float _x, float _y, float _width, float _height, float& _outGroundY) const;
-    bool IsTileSolid(int _tileX, int _tileY) const;
     
     // Getters
     int GetMapWidth() const { return m_mapWidth; }
@@ -31,7 +30,6 @@ public:
     int GetMapPixelWidth() const { return m_mapWidth * m_tileWidth; }
     int GetMapPixelHeight() const { return m_mapHeight * m_tileHeight; }
     int GetYOffset() const { return m_yOffset; }
-    float GetGroundY(float _x, float _y, float _width, float _height) const;
 
     // Setters
     void SetYOffset(int _yOffset) { m_yOffset = _yOffset; }

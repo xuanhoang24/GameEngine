@@ -12,7 +12,7 @@ Player::Player()
 	scale = 2.0f;
 
 	// Movement
-	m_walkSpeed = 800.0f; // pixels per second
+	m_walkSpeed = 800.0f;
 	m_runSpeed = 900.0f;
 	m_veloX = 0;
 	m_veloY = 0;
@@ -23,7 +23,7 @@ Player::Player()
 
 	// Gravity
 	m_gravity = 980.0f;
-	m_groundY = 500.0f; // Temp
+	m_groundY = 500.0f;
 	m_isGrounded = false;
 
 	// Map
@@ -32,8 +32,8 @@ Player::Player()
 	// Jump
 	m_jumpPressed = false;
 	m_isJumping = false;
-	m_jumpForce = -350.0f; // Screen Y-axis is flipped so negative is jump up
-	m_jumpHoldForce = -250.0f; // Holding jump add more height
+	m_jumpForce = -350.0f;
+	m_jumpHoldForce = -250.0f;
 	m_jumpHoldTimer = 0.0f;
 	m_jumpMaxHoldTime = 0.2f;
 	m_coyoteTime = 0.12f;
@@ -56,7 +56,7 @@ void Player::Initialize()
 
 void Player::Update(float _deltaTime)
 {
-#pragma region Calculate Movment
+#pragma region Calculate Movement
 	m_prevY = m_position.Y;
 
 	// Move player
@@ -67,7 +67,7 @@ void Player::Update(float _deltaTime)
 
 	// Apply velocity
 	m_position.Y += (m_veloY * _deltaTime);
-#pragma endregion Calculate Movment
+#pragma endregion Calculate Movement
 
 #pragma region Animation Logic
 	if (m_veloX == 0)
@@ -78,16 +78,19 @@ void Player::Update(float _deltaTime)
 		m_sprite->Update(EN_AN_IDLE, _deltaTime);
 #pragma endregion Animation Logic
 
-	// Ground Collision with tilemap
+	// Ground Collision with collision objects
 	float width = GetWidth();
 	float height = GetHeight();
 
 	float footX = m_position.X + width * 0.5f;
-	float groundY = m_gameMap->GetGroundY(
+	float groundY = 0.0f;
+
+	bool foundGround = m_gameMap->CheckGround(
 		footX - 1.0f,
 		m_position.Y,
 		2.0f,
-		height
+		height,
+		groundY
 	);
 
 	float prevBottom = m_prevY + height;
@@ -95,7 +98,7 @@ void Player::Update(float _deltaTime)
 
 	const float SNAP_EPS = 2.0f;
 
-	if (m_veloY >= 0 &&
+	if (foundGround && m_veloY >= 0 &&
 		prevBottom <= groundY + SNAP_EPS &&
 		currBottom >= groundY - SNAP_EPS)
 	{
@@ -179,7 +182,6 @@ void Player::Render(Renderer* _renderer)
 	else
 		srcRect = m_sprite->Update(EN_AN_IDLE, Timing::Instance().GetDeltaTime());
 
-
 	_renderer->RenderTexture(m_sprite, srcRect, destRect);
 }
 
@@ -205,7 +207,7 @@ void Player::HandleInput(SDL_Event _event)
 		m_isRunning = m_shiftDown;
 		m_facingRight = true;
 	}
-	else // Relase A or D
+	else // Release A or D
 	{
 		m_veloX = 0;
 		m_isRunning = false;

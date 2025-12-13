@@ -16,7 +16,6 @@ public:
     void Render(Renderer* _renderer);
     
     // Collision
-    float GetGroundY(float _x, float _y, float _width, float _height) const;
     bool CheckGround(float _x, float _y, float _width, float _height, float& _outGroundY) const;
     
     // Getters

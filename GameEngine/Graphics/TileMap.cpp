@@ -1,6 +1,6 @@
 #include "../Graphics/TileMap.h"
 
-TileMap::TileMap() 
+TileMap::TileMap()
 {
 }
 
@@ -37,10 +37,10 @@ void TileMap::LoadTilesets()
     for (const auto& ts : sets)
     {
         TilesetInfo info;
-        info.firstGID   = ts.getFirstGID();
-        info.tileWidth  = ts.getTileSize().x;
+        info.firstGID = ts.getFirstGID();
+        info.tileWidth = ts.getTileSize().x;
         info.tileHeight = ts.getTileSize().y;
-        info.columns    = ts.getColumnCount();
+        info.columns = ts.getColumnCount();
         info.imageWidth = ts.getImageSize().x;
         info.imageHeight = ts.getImageSize().y;
 
@@ -164,7 +164,7 @@ void TileMap::LoadCollisionObjects()
 
             CollisionShape shape;
             shape.x = obj.getPosition().x;
-            shape.y = obj.getPosition().y + m_yOffset;
+            shape.y = obj.getPosition().y;
 
             if (obj.getShape() == tmx::Object::Shape::Rectangle)
             {
@@ -249,32 +249,45 @@ bool TileMap::CheckGroundCollision(
     {
         if (shape.type == CollisionType::Rectangle)
         {
-            if (px + pw <= shape.x) continue;
-            if (px >= shape.x + shape.width) continue;
+            // Apply offset to collision shape
+            float shapeX = shape.x;
+            float shapeY = shape.y + m_yOffset;
 
-            if (playerBottom <= shape.y && shape.y < bestY)
+            // Check horizontal overlap
+            if (px + pw <= shapeX) continue;
+            if (px >= shapeX + shape.width) continue;
+
+            // Rectangle's top edge is the ground surface
+            if (playerBottom <= shapeY + 2.0f && shapeY < bestY)
             {
-                bestY = shape.y;
+                bestY = shapeY;
                 found = true;
             }
         }
         else if (shape.type == CollisionType::Polygon)
         {
+            // Check each edge of the polygon
             for (size_t i = 0; i < shape.points.size(); ++i)
             {
                 const Point& a = shape.points[i];
                 const Point& b = shape.points[(i + 1) % shape.points.size()];
 
-                if (a.Y != b.Y) continue;
+                // Apply offset to polygon points
+                float aY = a.Y + m_yOffset;
+                float bY = b.Y + m_yOffset;
+
+                // Check if edge is horizontal (or nearly horizontal)
+                if (abs((int)aY - (int)bY) > 2) continue;
 
                 float minX = (a.X < b.X) ? a.X : b.X;
                 float maxX = (a.X > b.X) ? a.X : b.X;
 
+                // Check horizontal overlap
                 if (px + pw > minX && px < maxX)
                 {
-                    if (playerBottom <= a.Y && a.Y < bestY)
+                    if (playerBottom <= aY + 5.0f && aY < bestY)
                     {
-                        bestY = a.Y;
+                        bestY = aY;
                         found = true;
                     }
                 }
@@ -289,78 +302,4 @@ bool TileMap::CheckGroundCollision(
     }
 
     return false;
-}
-
-bool TileMap::IsTileSolid(int _tileX, int _tileY) const
-{
-    // Out of bounds check
-    if (_tileX < 0 || _tileX >= m_mapWidth || _tileY < 0 || _tileY >= m_mapHeight)
-        return false;
-
-    // Only check the "ground" layer for solid tiles
-    for (const auto& li : m_layers)
-    {
-        const auto* layer = li.layer;
-        if (!layer) continue;
-
-        // Only check layers named "ground" for collision
-        string layerName = layer->getName();
-        if (layerName != "ground") continue;
-
-        const auto& tiles = layer->getTiles();
-        int index = _tileX + _tileY * m_mapWidth;
-        
-        if (index >= 0 && index < tiles.size())
-        {
-            int gid = tiles[index].ID;
-            // Any tile with a GID > 0 in the ground layer is considered solid
-            if (gid > 0)
-                return true;
-        }
-    }
-    
-    return false;
-}
-
-float TileMap::GetGroundY(float _x, float _y, float _width, float _height) const
-{
-    // Convert world coordinates to tile coordinates
-    float adjustedY = _y - m_yOffset;
-    float playerBottom = adjustedY + _height;
-    
-    int startX = (int)(_x / m_tileWidth);
-    int endX = (int)((_x + _width) / m_tileWidth);
-    
-    // Start checking from the player's current position
-    int startCheckY = (int)(playerBottom / m_tileHeight);
-    int maxCheckY = startCheckY + 3; // Check 3 tiles below
-    
-    float closestGroundY = 10000.0f;
-    
-    // Check tiles below the player
-    for (int checkY = startCheckY; checkY <= maxCheckY; ++checkY)
-    {
-        for (int x = startX; x <= endX; ++x)
-        {
-            if (IsTileSolid(x, checkY))
-            {
-                // Calculate the exact top of this tile in world coordinates
-                float tileTopY = (checkY * m_tileHeight) + m_yOffset;
-                
-                // Only consider this ground if it's below the player
-                if (tileTopY >= _y + _height - 5.0f) // Small tolerance for smooth landing
-                {
-                    if (tileTopY < closestGroundY)
-                    {
-                        closestGroundY = tileTopY;
-                    }
-                }
-            }
-        }
-        
-        if (closestGroundY < 10000.0f)
-            break;
-    }
-    
-    return closestGroundY;
 }

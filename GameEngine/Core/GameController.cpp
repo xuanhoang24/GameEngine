@@ -92,8 +92,8 @@ void GameController::RunGame()
             HandleInput(m_sdlEvent);
 
         m_player->Update(t->GetDeltaTime());
-        m_player->Render(m_renderer);
         g_Map->Render(m_renderer);
+        m_player->Render(m_renderer);
 
         t->CapFPS();
         SDL_RenderPresent(m_renderer->GetRenderer());

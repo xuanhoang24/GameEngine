@@ -23,7 +23,6 @@
       <UniqueIdentifier>{D4E5F6A7-B8C9-4012-DEF0-123456789012}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
-  
   <!-- Core Files -->
   <ItemGroup>
     <ClCompile Include="Core\main.cpp">
@@ -52,8 +51,10 @@
     <ClInclude Include="Core\BasicStructs.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\CollisionShape.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
-  
   <!-- Graphics Files -->
   <ItemGroup>
     <ClCompile Include="Graphics\Renderer.cpp">
@@ -125,7 +126,6 @@
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
-  
   <!-- Audio Files -->
   <ItemGroup>
     <ClCompile Include="Audio\AudioController.cpp">
@@ -149,7 +149,6 @@
       <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>
-  
   <!-- Input Files -->
   <ItemGroup>
     <ClCompile Include="Input\InputController.cpp">
@@ -179,7 +178,6 @@
       <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
-  
   <!-- Resources Files -->
   <ItemGroup>
     <ClCompile Include="Resources\AssetController.cpp">
@@ -212,7 +210,6 @@
       <Filter>Resources</Filter>
     </ClInclude>
   </ItemGroup>
-  
   <!-- Utils Files -->
   <ItemGroup>
     <ClCompile Include="Utils\StackAllocator.cpp">
@@ -227,7 +224,6 @@
       <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
-  
   <!-- Game Files -->
   <ItemGroup>
     <ClCompile Include="Game\Player.cpp">

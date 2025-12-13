@@ -4,8 +4,10 @@
 #include "../Core/StandardIncludes.h"
 #include <tmxlite/Map.hpp>
 #include <tmxlite/TileLayer.hpp>
+#include <tmxlite/ObjectGroup.hpp>
 #include "../Graphics/Renderer.h"
 #include "../Graphics/Texture.h"
+#include "CollisionShape.h"
 
 class TileMap
 {
@@ -33,6 +35,12 @@ public:
     // Setters
     void SetYOffset(int _yOffset) { m_yOffset = _yOffset; }
 
+    bool CheckGroundCollision(
+        float px, float py,
+        float pw, float ph,
+        float& outGroundY
+    ) const;
+
 private:
     struct TilesetInfo
     {
@@ -54,7 +62,8 @@ private:
 
     // Methods
     void LoadTilesets();
-    void LoadLayers();
+    void LoadLayers(); 
+    void LoadCollisionObjects();
     TilesetInfo* FindTileset(int gid);
 
     // Members
@@ -62,6 +71,7 @@ private:
 
     std::vector<TilesetInfo> m_tilesets;
     std::vector<LayerInfo>   m_layers;
+    std::vector<CollisionShape> m_collisionShapes;
 
     // Map info
     int m_mapWidth = 0;

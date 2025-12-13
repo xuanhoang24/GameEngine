@@ -24,6 +24,7 @@ bool TileMap::Load(const string& _path)
     // Load
     LoadTilesets();
     LoadLayers();
+    LoadCollisionObjects();
 
     return true;
 }
@@ -35,25 +36,22 @@ void TileMap::LoadTilesets()
     for (const auto& ts : sets)
     {
         TilesetInfo info;
-
-        info.firstGID = ts.getFirstGID();
-        info.tileWidth = ts.getTileSize().x;
+        info.firstGID   = ts.getFirstGID();
+        info.tileWidth  = ts.getTileSize().x;
         info.tileHeight = ts.getTileSize().y;
+        info.columns    = ts.getColumnCount();
         info.imageWidth = ts.getImageSize().x;
         info.imageHeight = ts.getImageSize().y;
-        info.columns = ts.getColumnCount();
 
-        // Tileset PNG path
         string imgPath = ts.getImagePath();
-
         SDL_Surface* surf = IMG_Load(imgPath.c_str());
         M_ASSERT(surf != nullptr, "Failed to load tileset PNG");
 
         SDL_Renderer* sdl = Renderer::Instance().GetRenderer();
         info.texture = SDL_CreateTextureFromSurface(sdl, surf);
         SDL_FreeSurface(surf);
-        M_ASSERT(info.texture != nullptr, "Failed to create SDL texture");
 
+        M_ASSERT(info.texture != nullptr, "Failed to create texture");
         m_tilesets.push_back(info);
     }
 }
@@ -129,6 +127,114 @@ void TileMap::Render(Renderer* _renderer)
             }
         }
     }
+}
+
+void TileMap::LoadCollisionObjects()
+{
+    m_collisionShapes.clear();
+
+    const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
+
+    for (size_t i = 0; i < layers.size(); ++i)
+    {
+        if (layers[i]->getType() != tmx::Layer::Type::Object)
+            continue;
+
+        if (layers[i]->getName() != "collision")
+            continue;
+
+        const tmx::ObjectGroup& objLayer = layers[i]->getLayerAs<tmx::ObjectGroup>();
+        const std::vector<tmx::Object>& objects = objLayer.getObjects();
+
+        for (size_t o = 0; o < objects.size(); ++o)
+        {
+            const tmx::Object& obj = objects[o];
+
+            CollisionShape shape;
+            shape.x = obj.getPosition().x;
+            shape.y = obj.getPosition().y + m_yOffset;
+
+            if (obj.getShape() == tmx::Object::Shape::Rectangle)
+            {
+                shape.type = CollisionType::Rectangle;
+                shape.width = obj.getAABB().width;
+                shape.height = obj.getAABB().height;
+            }
+            else if (obj.getShape() == tmx::Object::Shape::Polygon)
+            {
+                shape.type = CollisionType::Polygon;
+
+                const std::vector<tmx::Vector2f>& pts = obj.getPoints();
+                for (size_t p = 0; p < pts.size(); ++p)
+                {
+                    shape.points.push_back(
+                        Point(
+                            (unsigned int)(shape.x + pts[p].x),
+                            (unsigned int)(shape.y + pts[p].y)
+                        )
+                    );
+                }
+            }
+
+            m_collisionShapes.push_back(shape);
+        }
+    }
+}
+
+bool TileMap::CheckGroundCollision(
+    float px, float py,
+    float pw, float ph,
+    float& outGroundY
+) const
+{
+    float playerBottom = py + ph;
+    float bestY = 100000.0f;
+    bool found = false;
+
+    for (const auto& shape : m_collisionShapes)
+    {
+        if (shape.type == CollisionType::Rectangle)
+        {
+            if (px + pw <= shape.x) continue;
+            if (px >= shape.x + shape.width) continue;
+
+            if (playerBottom <= shape.y && shape.y < bestY)
+            {
+                bestY = shape.y;
+                found = true;
+            }
+        }
+        else if (shape.type == CollisionType::Polygon)
+        {
+            for (size_t i = 0; i < shape.points.size(); ++i)
+            {
+                const Point& a = shape.points[i];
+                const Point& b = shape.points[(i + 1) % shape.points.size()];
+
+                if (a.Y != b.Y) continue;
+
+                float minX = (a.X < b.X) ? a.X : b.X;
+                float maxX = (a.X > b.X) ? a.X : b.X;
+
+                if (px + pw > minX && px < maxX)
+                {
+                    if (playerBottom <= a.Y && a.Y < bestY)
+                    {
+                        bestY = a.Y;
+                        found = true;
+                    }
+                }
+            }
+        }
+    }
+
+    if (found)
+    {
+        outGroundY = bestY;
+        return true;
+    }
+
+    return false;
 }
 
 bool TileMap::IsTileSolid(int _tileX, int _tileY) const

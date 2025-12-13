@@ -163,6 +163,7 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClCompile Include="Graphics\WavDraw.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graphics\CollisionShape.h" />
     <ClInclude Include="Graphics\Renderer.h" />
     <ClInclude Include="Graphics\RenderTarget.h" />
     <ClInclude Include="Graphics\Texture.h" />

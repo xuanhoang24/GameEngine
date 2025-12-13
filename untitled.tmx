@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="31" height="17" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="11">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="31" height="17" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="6">
  <tileset firstgid="1" name="Assets" tilewidth="16" tileheight="16" tilecount="625" columns="25">
-  <image source="Images/Tilemap/Assets.png" width="400" height="400"/>
+  <image source="Assets/Maps/Images/Tilemap/Assets.png" width="400" height="400"/>
  </tileset>
  <imagelayer id="4" name="background 2">
-  <image source="Images/Tilemap/Background_2.png" width="496" height="272"/>
+  <image source="Assets/Maps/Images/Tilemap/Background_2.png" width="496" height="272"/>
  </imagelayer>
  <imagelayer id="3" name="background 1">
-  <image source="Images/Tilemap/Background_1.png" width="496" height="272"/>
+  <image source="Assets/Maps/Images/Tilemap/Background_1.png" width="496" height="272"/>
  </imagelayer>
  <layer id="1" name="ground" width="31" height="17">
   <data encoding="base64" compression="zlib">
@@ -29,7 +29,8 @@
   <object id="4" x="0.363636" y="208.182">
    <polygon points="0,0 255.455,-0.181818 255.636,63.6364 239.091,63.8182 240,15.4545 0,16"/>
   </object>
-  <object id="8" x="385" y="111.667" width="110.333" height="22.3333"/>
-  <object id="9" x="385.333" y="112" width="21.3333" height="160"/>
+  <object id="5" x="384.182" y="271.818">
+   <polygon points="0,0 0,-159.818 111.455,-159.818 111.455,-143.455 15.4545,-143.455 16,0.727273"/>
+  </object>
  </objectgroup>
 </map>

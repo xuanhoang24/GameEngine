@@ -13,7 +13,7 @@ TileMap::~TileMap()
 
 bool TileMap::Load(const string& _path)
 {
-    M_ASSERT(m_map.load(_path), "Failed to load TMX")
+    M_ASSERT(m_map.load(_path), "Failed to load TMX");
 
     // Extract map size
     m_tileWidth = m_map.getTileSize().x;

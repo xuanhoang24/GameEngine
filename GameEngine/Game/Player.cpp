@@ -8,7 +8,7 @@
 Player::Player()
 {
 	m_sprite = nullptr;
-	m_position = Point(100, 300);
+	m_position = Point(100, 50);
 	scale = 2.0f;
 
 	// Movement
@@ -19,6 +19,7 @@ Player::Player()
 	m_isRunning = false;
 	m_shiftDown = false;
 	m_facingRight = true;
+	m_prevY = m_position.Y;
 
 	// Gravity
 	m_gravity = 980.0f;
@@ -56,6 +57,8 @@ void Player::Initialize()
 void Player::Update(float _deltaTime)
 {
 #pragma region Calculate Movment
+	m_prevY = m_position.Y;
+
 	// Move player
 	m_position.X += m_veloX * _deltaTime;
 
@@ -76,15 +79,28 @@ void Player::Update(float _deltaTime)
 #pragma endregion Animation Logic
 
 	// Ground Collision with tilemap
-
 	float width = GetWidth();
 	float height = GetHeight();
-	float groundY = m_gameMap->GetGroundY(m_position.X, m_position.Y, width, height);
 
-	if (m_position.Y + height >= groundY) // Check if bottom ( top + heigh ) of player sprite is on the ground, prevent falling.
+	float footX = m_position.X + width * 0.5f;
+	float groundY = m_gameMap->GetGroundY(
+		footX - 1.0f,
+		m_position.Y,
+		2.0f,
+		height
+	);
+
+	float prevBottom = m_prevY + height;
+	float currBottom = m_position.Y + height;
+
+	const float SNAP_EPS = 2.0f;
+
+	if (m_veloY >= 0 &&
+		prevBottom <= groundY + SNAP_EPS &&
+		currBottom >= groundY - SNAP_EPS)
 	{
-		m_position.Y = groundY - height; // Set the player top on the ground, if not player top will inside the ground
-		m_veloY = 0;
+		m_position.Y = groundY - height;
+		m_veloY = 0.0f;
 		m_isGrounded = true;
 		m_isJumping = false;
 	}
@@ -203,6 +219,5 @@ void Player::HandleInput(SDL_Event _event)
 	else
 	{
 		m_jumpPressed = false;
-		m_isJumping = false;
 	}
 }

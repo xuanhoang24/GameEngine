@@ -36,6 +36,7 @@ private:
 	bool m_isRunning;
 	bool m_shiftDown;
 	bool m_facingRight;
+	float m_prevY;
 
 	// Gravity
 	float m_gravity;

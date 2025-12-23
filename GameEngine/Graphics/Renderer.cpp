@@ -25,6 +25,24 @@ void Renderer::Initialize()
     M_ASSERT(m_window != nullptr, "Failed to initialize SDL window.");
     m_renderer = SDL_CreateRenderer(m_window, -1, 0);
     M_ASSERT(m_renderer != nullptr, "Failed to initialize SDL renderer.");
+    
+    // Set logical rendering size (scaled to fit 1280×720 window)
+    // 
+    // HOW TO CALCULATE:
+    // 1. Decide tiles you want: 25 tiles wide
+    // 2. Multiply by tile size: 25 × 16 pixels = 400 pixels wide
+    // 3. For height, either:
+    //    a) Choose exact tiles: 15 × 16 = 240 pixels (letterboxed)
+    //    b) Match window ratio: 1280×720 = 16:9, so 400 × (9/16) = 225 pixels (fills screen)
+    // 
+    // Fill screen with 25×14.0625 tiles, no letterboxing
+    //   Width:  25 tiles × 16 pixels = 400 pixels
+    //   Height: 400 × (9/16) = 225 pixels (to match 16:9 ratio)
+    //   Check: 400÷16 = 25 tiles, 225÷16 = 14.0625 tiles
+
+    SDL_RenderSetLogicalSize(m_renderer, 400, 225);
+    
+    SDL_RenderSetIntegerScale(m_renderer, SDL_FALSE);
 }
 
 void Renderer::ChangeDisplayMode(SDL_DisplayMode* _mode)

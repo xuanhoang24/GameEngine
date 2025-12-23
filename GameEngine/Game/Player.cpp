@@ -8,9 +8,9 @@
 Player::Player()
 {
 	m_sprite = nullptr;
-	m_position = Point(100, 50);
+	m_position = Point(100, 100);
 	m_worldX = 100.0f;
-	scale = 2.0f;
+	scale = 1.33f;
 
 	// Movement
 	m_walkSpeed = 800.0f;
@@ -98,12 +98,21 @@ void Player::Update(float _deltaTime)
 	float currBottom = m_position.Y + height;
 
 	const float SNAP_EPS = 2.0f;
+	const float FALLBACK_GROUND = 200.0f;
 
 	if (foundGround && m_veloY >= 0 &&
 		prevBottom <= groundY + SNAP_EPS &&
 		currBottom >= groundY - SNAP_EPS)
 	{
 		m_position.Y = groundY - height;
+		m_veloY = 0.0f;
+		m_isGrounded = true;
+		m_isJumping = false;
+	}
+	else if (!foundGround && m_position.Y + height >= FALLBACK_GROUND)
+	{
+		// Fallback ground if no collision objects found
+		m_position.Y = FALLBACK_GROUND - height;
 		m_veloY = 0.0f;
 		m_isGrounded = true;
 		m_isJumping = false;

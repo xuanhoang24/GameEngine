@@ -22,9 +22,6 @@ public:
     // Getters
     int GetMapPixelWidth() const;
     int GetMapPixelHeight() const;
-    
-    // Setters
-    void SetMapYOffset(int _yOffset);
 
 private:
     TileMap* m_tileMap = nullptr;

@@ -113,7 +113,7 @@ void TileMap::Render(Renderer* _renderer, Camera* _camera)
         {
             SDL_Rect dst;
             dst.x = img.x + mapOffsetX - (int)cameraX;
-            dst.y = img.y + m_yOffset;
+            dst.y = img.y;
             SDL_QueryTexture(img.texture, nullptr, nullptr, &dst.w, &dst.h);
             SDL_RenderCopy(sdl, img.texture, nullptr, &dst);
         }
@@ -147,7 +147,7 @@ void TileMap::Render(Renderer* _renderer, Camera* _camera)
 
                     SDL_Rect dst;
                     dst.x = x * m_tileWidth + mapOffsetX - (int)cameraX;
-                    dst.y = y * m_tileHeight + m_yOffset;
+                    dst.y = y * m_tileHeight;
                     dst.w = m_tileWidth;
                     dst.h = m_tileHeight;
 
@@ -278,7 +278,7 @@ bool TileMap::CheckGroundCollision(
             {
                 // Apply offset to collision shape (including map repetition)
                 float shapeX = shape.x + mapOffsetX;
-                float shapeY = shape.y + m_yOffset;
+                float shapeY = shape.y;
 
                 // Check horizontal overlap
                 if (px + pw <= shapeX) continue;
@@ -302,8 +302,8 @@ bool TileMap::CheckGroundCollision(
                     // Apply offset to polygon points (including map repetition)
                     float aX = a.X + mapOffsetX;
                     float bX = b.X + mapOffsetX;
-                    float aY = a.Y + m_yOffset;
-                    float bY = b.Y + m_yOffset;
+                    float aY = a.Y;
+                    float bY = b.Y;
 
                     // Check if edge is horizontal (or nearly horizontal)
                     if (abs((int)aY - (int)bY) > 2) continue;

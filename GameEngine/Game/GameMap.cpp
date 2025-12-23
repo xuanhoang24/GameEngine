@@ -42,9 +42,3 @@ int GameMap::GetMapPixelHeight() const
         return m_tileMap->GetMapPixelHeight();
     return 0;
 }
-
-void GameMap::SetMapYOffset(int _yOffset)
-{
-    if (m_tileMap)
-        m_tileMap->SetYOffset(_yOffset);
-}

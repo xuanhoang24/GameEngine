@@ -32,10 +32,12 @@ void Camera::FollowPlayer(Player* _player, Renderer* _renderer)
 
 	float playerWorldX = _player->GetWorldX();
 	float playerWidth = _player->GetWidth();
-	int screenWidth = _renderer->GetWindowSize().X;
+	
+	// Logical width (25 tiles × 16 pixels per tile = 400)
+	int logicalWidth = 400;
 
 	// Center camera on player
-	float targetX = playerWorldX + playerWidth * 0.5f - screenWidth * 0.5f;
+	float targetX = playerWorldX + playerWidth * 0.5f - logicalWidth * 0.5f;
 
 	// Don't let camera go negative at the start
 	if (targetX < 0)

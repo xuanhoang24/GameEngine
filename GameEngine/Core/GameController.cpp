@@ -48,12 +48,6 @@ void GameController::Initialize()
     g_Map = new GameMap();
     g_Map->Load("../Assets/Maps/untitled.tmx");
     
-    // Auto-detect map height and position it at bottom of screen
-    int mapPixelHeight = g_Map->GetMapPixelHeight();
-    int screenHeight = m_renderer->GetWindowSize().Y;
-    int mapYOffset = screenHeight - mapPixelHeight;
-    g_Map->SetMapYOffset(mapYOffset);
-    
     // Connect player to map for collision
     m_player->SetGameMap(g_Map);
 }

@@ -3,6 +3,7 @@
 
 #include "../Core/StandardIncludes.h"
 #include "../Graphics/TileMap.h"
+#include "../Graphics/Camera.h"
 
 class Renderer;
 
@@ -13,7 +14,7 @@ public:
     ~GameMap();
 
     bool Load(const string& _file);
-    void Render(Renderer* _renderer);
+    void Render(Renderer* _renderer, Camera* _camera);
     
     // Collision
     bool CheckGround(float _x, float _y, float _width, float _height, float& _outGroundY) const;
@@ -21,11 +22,9 @@ public:
     // Getters
     int GetMapPixelWidth() const;
     int GetMapPixelHeight() const;
-    float GetCameraX() const;
     
     // Setters
     void SetMapYOffset(int _yOffset);
-    void SetCameraX(float _cameraX);
 
 private:
     TileMap* m_tileMap = nullptr;

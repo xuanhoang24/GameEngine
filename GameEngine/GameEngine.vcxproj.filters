@@ -75,6 +75,9 @@
     <ClCompile Include="Graphics\TileMap.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\Camera.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
     <ClCompile Include="Graphics\TTFont.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -108,6 +111,9 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\TileMap.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Camera.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\TTFont.h">

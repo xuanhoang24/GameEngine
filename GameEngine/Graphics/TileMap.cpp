@@ -88,7 +88,7 @@ TileMap::TilesetInfo* TileMap::FindTileset(int _gid)
     return result;
 }
 
-void TileMap::Render(Renderer* _renderer)
+void TileMap::Render(Renderer* _renderer, Camera* _camera)
 {
     SDL_Renderer* sdl = _renderer->GetRenderer();
     int mapPixelWidth = GetMapPixelWidth();
@@ -97,9 +97,11 @@ void TileMap::Render(Renderer* _renderer)
     Point screenSize = _renderer->GetWindowSize();
     int screenWidth = screenSize.X;
     
+    float cameraX = _camera ? _camera->GetX() : 0.0f;
+    
     // Calculate which map instances we need to render
-    int startMapIndex = (int)floor(m_cameraX / mapPixelWidth);
-    int endMapIndex = (int)ceil((m_cameraX + screenWidth) / mapPixelWidth);
+    int startMapIndex = (int)floor(cameraX / mapPixelWidth);
+    int endMapIndex = (int)ceil((cameraX + screenWidth) / mapPixelWidth);
     
     // Render multiple instances of the map for endless scrolling
     for (int mapIndex = startMapIndex; mapIndex <= endMapIndex; ++mapIndex)
@@ -110,7 +112,7 @@ void TileMap::Render(Renderer* _renderer)
         for (const auto& img : m_imageLayers)
         {
             SDL_Rect dst;
-            dst.x = img.x + mapOffsetX - (int)m_cameraX;
+            dst.x = img.x + mapOffsetX - (int)cameraX;
             dst.y = img.y + m_yOffset;
             SDL_QueryTexture(img.texture, nullptr, nullptr, &dst.w, &dst.h);
             SDL_RenderCopy(sdl, img.texture, nullptr, &dst);
@@ -144,7 +146,7 @@ void TileMap::Render(Renderer* _renderer)
                     src.h = ts->tileHeight;
 
                     SDL_Rect dst;
-                    dst.x = x * m_tileWidth + mapOffsetX - (int)m_cameraX;
+                    dst.x = x * m_tileWidth + mapOffsetX - (int)cameraX;
                     dst.y = y * m_tileHeight + m_yOffset;
                     dst.w = m_tileWidth;
                     dst.h = m_tileHeight;

@@ -146,16 +146,13 @@ void Player::Update(float _deltaTime)
 	}
 }
 
-void Player::Render(Renderer* _renderer)
+void Player::Render(Renderer* _renderer, Camera* _camera)
 {
 	float width = 69 * scale;
 	float height = 44 * scale;
 
-	// Get camera position from map
-	float cameraX = m_gameMap->GetCameraX();
-	
-	// Convert world position to screen position
-	float screenX = m_worldX - cameraX;
+	// Convert world position to screen position using camera
+	float screenX = _camera ? _camera->WorldToScreenX(m_worldX) : m_worldX;
 	float screenY = m_position.Y;
 
 	// Destination on the screen

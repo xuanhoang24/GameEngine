@@ -13,6 +13,7 @@ class Song;
 class WavDraw;
 class Player;
 class GameMap;
+class Camera;
 class GameController : public Singleton<GameController>
 {
 public:
@@ -33,6 +34,7 @@ private:
     InputController* m_input;
     Player* m_player;
     GameMap* g_Map;
+    Camera* m_camera;
 
     bool m_quit;
 };

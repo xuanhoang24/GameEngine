@@ -1,5 +1,6 @@
 #include "../Core/GameController.h"
 #include "../Graphics/Renderer.h"
+#include "../Graphics/Camera.h"
 #include "../Input/InputController.h"
 #include "../Game/Player.h"
 #include "../Graphics/SpriteAnim.h"
@@ -15,6 +16,7 @@ GameController::GameController()
     m_renderer = nullptr;
     m_input = nullptr;
     m_player = nullptr;
+    m_camera = nullptr;
     m_quit = false;
 }
 
@@ -34,6 +36,9 @@ void GameController::Initialize()
     m_renderer = &Renderer::Instance();
     m_renderer->Initialize();
     m_input = &InputController::Instance();
+
+    // Camera
+    m_camera = new Camera();
 
     // Player
     m_player = new Player();
@@ -57,6 +62,9 @@ void GameController::ShutDown()
 {
     delete m_player;
     m_player = nullptr;
+
+    delete m_camera;
+    m_camera = nullptr;
 
     delete SpriteAnim::Pool;
     SpriteAnim::Pool = nullptr;
@@ -94,20 +102,10 @@ void GameController::RunGame()
         m_player->Update(t->GetDeltaTime());
         
         // Update camera to follow player
-        float playerWorldX = m_player->GetWorldX();
-        float playerWidth = m_player->GetWidth();
-        int screenWidth = m_renderer->GetWindowSize().X;
+        m_camera->FollowPlayer(m_player, m_renderer);
         
-        // Center camera on player
-        float cameraX = playerWorldX + playerWidth * 0.5f - screenWidth * 0.5f;
-        
-        // Don't let camera go negative at the start
-        if (cameraX < 0) cameraX = 0;
-        
-        g_Map->SetCameraX(cameraX);
-        
-        g_Map->Render(m_renderer);
-        m_player->Render(m_renderer);
+        g_Map->Render(m_renderer, m_camera);
+        m_player->Render(m_renderer, m_camera);
 
         t->CapFPS();
         SDL_RenderPresent(m_renderer->GetRenderer());

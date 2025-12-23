@@ -17,10 +17,10 @@ bool GameMap::Load(const string& _file)
     return m_tileMap->Load(_file);
 }
 
-void GameMap::Render(Renderer* _renderer)
+void GameMap::Render(Renderer* _renderer, Camera* _camera)
 {
     if (m_tileMap)
-        m_tileMap->Render(_renderer);
+        m_tileMap->Render(_renderer, _camera);
 }
 
 bool GameMap::CheckGround(float _x, float _y, float _width, float _height, float& _outGroundY) const
@@ -47,17 +47,4 @@ void GameMap::SetMapYOffset(int _yOffset)
 {
     if (m_tileMap)
         m_tileMap->SetYOffset(_yOffset);
-}
-
-float GameMap::GetCameraX() const
-{
-    if (m_tileMap)
-        return m_tileMap->GetCameraX();
-    return 0.0f;
-}
-
-void GameMap::SetCameraX(float _cameraX)
-{
-    if (m_tileMap)
-        m_tileMap->SetCameraX(_cameraX);
 }

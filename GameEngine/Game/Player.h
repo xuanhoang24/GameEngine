@@ -6,6 +6,7 @@
 #include "../Graphics/SpriteSheet.h"
 
 class GameMap;
+class Camera;
 
 class Player
 {
@@ -15,7 +16,7 @@ public:
 
 	void Initialize();
 	void Update(float _deltaTime);
-	void Render(Renderer* _renderer);
+	void Render(Renderer* _renderer, Camera* _camera);
 	void HandleInput(SDL_Event _event);
 	void SetGameMap(GameMap* _map) { m_gameMap = _map; }
 	

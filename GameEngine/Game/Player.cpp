@@ -10,7 +10,7 @@ Player::Player()
 	m_sprite = nullptr;
 	m_position = Point(100, 100);
 	m_worldX = 100.0f;
-	scale = 1.33f;
+	scale = 1.0f;
 
 	// Movement
 	m_walkSpeed = 800.0f;
@@ -70,32 +70,23 @@ void Player::Update(float _deltaTime)
 	m_position.Y += (m_veloY * _deltaTime);
 #pragma endregion Calculate Movement
 
-#pragma region Animation Logic
-	if (m_veloX == 0)
-		m_sprite->Update(EN_AN_IDLE, _deltaTime);
-	else if (m_isRunning)
-		m_sprite->Update(EN_AN_RUN, _deltaTime);
-	else
-		m_sprite->Update(EN_AN_IDLE, _deltaTime);
-#pragma endregion Animation Logic
+#pragma region Collision Detection
+	// Get collision box dimensions
+	float collisionX, collisionY, collisionWidth, collisionHeight;
+	GetCollisionBox(collisionX, collisionY, collisionWidth, collisionHeight);
 
-	// Ground Collision with collision objects
-	float width = GetWidth();
-	float height = GetHeight();
-
-	float footX = m_worldX + width * 0.5f;
+	// Check ground collision using the collision box
 	float groundY = 0.0f;
-
 	bool foundGround = m_gameMap->CheckGround(
-		footX - 1.0f,
-		m_position.Y,
-		2.0f,
-		height,
+		collisionX,
+		collisionY,
+		collisionWidth,
+		collisionHeight,
 		groundY
 	);
 
-	float prevBottom = m_prevY + height;
-	float currBottom = m_position.Y + height;
+	float prevBottom = m_prevY + GetHeight();
+	float currBottom = m_position.Y + GetHeight();
 
 	const float SNAP_EPS = 2.0f;
 	const float FALLBACK_GROUND = 200.0f;
@@ -104,15 +95,20 @@ void Player::Update(float _deltaTime)
 		prevBottom <= groundY + SNAP_EPS &&
 		currBottom >= groundY - SNAP_EPS)
 	{
-		m_position.Y = groundY - height;
+		// Calculate offset from collision box bottom to sprite bottom
+		float spriteHeight = GetHeight();
+		float collisionOffsetY = spriteHeight - collisionHeight;
+		
+		// Position sprite so collision box sits on ground
+		m_position.Y = groundY - collisionHeight - collisionOffsetY;
 		m_veloY = 0.0f;
 		m_isGrounded = true;
 		m_isJumping = false;
 	}
-	else if (!foundGround && m_position.Y + height >= FALLBACK_GROUND)
+	else if (!foundGround && m_position.Y + GetHeight() >= FALLBACK_GROUND)
 	{
 		// Fallback ground if no collision objects found
-		m_position.Y = FALLBACK_GROUND - height;
+		m_position.Y = FALLBACK_GROUND - GetHeight();
 		m_veloY = 0.0f;
 		m_isGrounded = true;
 		m_isJumping = false;
@@ -121,6 +117,16 @@ void Player::Update(float _deltaTime)
 	{
 		m_isGrounded = false;
 	}
+#pragma endregion Collision Detection
+
+#pragma region Animation Logic
+	if (m_veloX == 0)
+		m_sprite->Update(EN_AN_IDLE, _deltaTime);
+	else if (m_isRunning)
+		m_sprite->Update(EN_AN_RUN, _deltaTime);
+	else
+		m_sprite->Update(EN_AN_IDLE, _deltaTime);
+#pragma endregion Animation Logic
 
 	// Update Coyote Timer
 	if (m_isGrounded)
@@ -194,6 +200,53 @@ void Player::Render(Renderer* _renderer, Camera* _camera)
 		srcRect = m_sprite->Update(EN_AN_IDLE, Timing::Instance().GetDeltaTime());
 
 	_renderer->RenderTexture(m_sprite, srcRect, destRect);
+}
+
+void Player::RenderCollisionBox(Renderer* _renderer, Camera* _camera)
+{
+	float spriteWidth = GetWidth();
+	float spriteHeight = GetHeight();
+
+	float collisionWidth = spriteWidth * 0.3f;
+	float collisionHeight = spriteHeight * 0.80f;
+	
+	float horizontalOffset = m_facingRight ? -8.0f : 8.0f;
+	float collisionX = m_worldX + (spriteWidth - collisionWidth) * 0.5f + horizontalOffset;
+	
+	// Align to feet
+	float collisionY = m_position.Y + (spriteHeight - collisionHeight);
+
+	// Convert world position to screen position using camera
+	float screenX = _camera ? _camera->WorldToScreenX(collisionX) : collisionX;
+	float screenY = collisionY;
+
+	SDL_Renderer* sdl = _renderer->GetRenderer();
+
+	// Set green color for player collision box
+	SDL_SetRenderDrawColor(sdl, 0, 255, 0, 255);
+
+	// Draw the collision box outline
+	SDL_Rect collisionRect;
+	collisionRect.x = (int)screenX;
+	collisionRect.y = (int)screenY;
+	collisionRect.w = (int)collisionWidth;
+	collisionRect.h = (int)collisionHeight;
+
+	SDL_RenderDrawRect(sdl, &collisionRect);
+}
+
+void Player::GetCollisionBox(float& outX, float& outY, float& outWidth, float& outHeight) const
+{
+	float spriteWidth = GetWidth();
+	float spriteHeight = GetHeight();
+
+	// Collision box dimensions (same as visual debug box)
+	outWidth = spriteWidth * 0.3f;
+	outHeight = spriteHeight * 0.80f;
+	
+	float horizontalOffset = m_facingRight ? -8.0f : 8.0f;
+	outX = m_worldX + (spriteWidth - outWidth) * 0.5f + horizontalOffset;
+	outY = m_position.Y + (spriteHeight - outHeight);
 }
 
 void Player::HandleInput(SDL_Event _event)

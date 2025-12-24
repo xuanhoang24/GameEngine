@@ -17,6 +17,7 @@ public:
 	void Initialize();
 	void Update(float _deltaTime);
 	void Render(Renderer* _renderer, Camera* _camera);
+	void RenderCollisionBox(Renderer* _renderer, Camera* _camera);
 	void HandleInput(SDL_Event _event);
 	void SetGameMap(GameMap* _map) { m_gameMap = _map; }
 	
@@ -24,6 +25,8 @@ public:
 	float GetHeight() const { return 44 * scale; }
 	float GetWorldX() const { return m_worldX; }
 	float GetWorldY() const { return m_position.Y; }
+
+	void GetCollisionBox(float& outX, float& outY, float& outWidth, float& outHeight) const;
 
 private:
 	SpriteSheet* m_sprite;

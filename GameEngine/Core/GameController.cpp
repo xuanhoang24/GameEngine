@@ -100,6 +100,7 @@ void GameController::RunGame()
         
         g_Map->Render(m_renderer, m_camera);
         m_player->Render(m_renderer, m_camera);
+        m_player->RenderCollisionBox(m_renderer, m_camera);
 
         t->CapFPS();
         SDL_RenderPresent(m_renderer->GetRenderer());

@@ -103,22 +103,33 @@ void TileMap::Render(Renderer* _renderer, Camera* _camera)
     int startMapIndex = (int)floor(cameraX / mapPixelWidth);
     int endMapIndex = (int)ceil((cameraX + screenWidth) / mapPixelWidth);
     
-    // Render multiple instances of the map for endless scrolling
+    // 1. Draw image layers (background)
+    for (const auto& img : m_imageLayers)
+    {
+        int imgWidth, imgHeight;
+        SDL_QueryTexture(img.texture, nullptr, nullptr, &imgWidth, &imgHeight);
+        
+        // Calculate how many times to repeat the background
+        int startImgIndex = (int)floor((cameraX - img.x) / imgWidth);
+        int endImgIndex = (int)ceil((cameraX + screenWidth - img.x) / imgWidth);
+        
+        for (int imgIndex = startImgIndex; imgIndex <= endImgIndex; ++imgIndex)
+        {
+            SDL_Rect dst;
+            dst.x = img.x + (imgIndex * imgWidth) - (int)cameraX;
+            dst.y = img.y;
+            dst.w = imgWidth;
+            dst.h = imgHeight;
+            SDL_RenderCopy(sdl, img.texture, nullptr, &dst);
+        }
+    }
+    
+    // 2. Render multiple instances of the map
     for (int mapIndex = startMapIndex; mapIndex <= endMapIndex; ++mapIndex)
     {
         int mapOffsetX = mapIndex * mapPixelWidth;
-        
-        // 1. Draw image layers (background)
-        for (const auto& img : m_imageLayers)
-        {
-            SDL_Rect dst;
-            dst.x = img.x + mapOffsetX - (int)cameraX;
-            dst.y = img.y;
-            SDL_QueryTexture(img.texture, nullptr, nullptr, &dst.w, &dst.h);
-            SDL_RenderCopy(sdl, img.texture, nullptr, &dst);
-        }
 
-        // 2. Draw tile layers
+        // 3. Draw tile layers
         for (auto& li : m_layers)
         {
             const auto* layer = li.layer;

@@ -29,18 +29,15 @@ void Renderer::Initialize()
     // Set logical rendering size (scaled to fit 1280×720 window)
     // 
     // HOW TO CALCULATE:
-    // 1. Decide tiles you want: 25 tiles wide
-    // 2. Multiply by tile size: 25 × 16 pixels = 400 pixels wide
-    // 3. For height, either:
-    //    a) Choose exact tiles: 15 × 16 = 240 pixels (letterboxed)
-    //    b) Match window ratio: 1280×720 = 16:9, so 400 × (9/16) = 225 pixels (fills screen)
+    // 1. Map height: 17 tiles × 16 pixels = 272 pixels
+    // 2. Calculate width to fill screen: 272 × (1280/720) = 272 × 1.778 = 483.5 pixels
+    // 3. This gives us ~30 tiles wide (483÷16 = 30.2 tiles)
     // 
-    // Fill screen with 25×14.0625 tiles, no letterboxing
-    //   Width:  25 tiles × 16 pixels = 400 pixels
-    //   Height: 400 × (9/16) = 225 pixels (to match 16:9 ratio)
-    //   Check: 400÷16 = 25 tiles, 225÷16 = 14.0625 tiles
+    // Fill screen with no letterboxing, showing full 17-tile height
+    //   Width:  483 pixels (~30 tiles)
+    //   Height: 272 pixels (17 tiles)
 
-    SDL_RenderSetLogicalSize(m_renderer, 400, 225);
+    SDL_RenderSetLogicalSize(m_renderer, 483, 272);
     
     SDL_RenderSetIntegerScale(m_renderer, SDL_FALSE);
 }

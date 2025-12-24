@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="31" height="17" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="11">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="17" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="29">
  <tileset firstgid="1" name="Assets" tilewidth="16" tileheight="16" tilecount="625" columns="25">
   <image source="Images/Tilemap/Assets.png" width="400" height="400"/>
  </tileset>
- <imagelayer id="4" name="background 2">
+ <imagelayer id="3" name="background 2" repeatx="1">
   <image source="Images/Tilemap/Background_2.png" width="496" height="272"/>
  </imagelayer>
- <imagelayer id="3" name="background 1">
+ <imagelayer id="2" name="background 1" repeatx="1">
   <image source="Images/Tilemap/Background_1.png" width="496" height="272"/>
  </imagelayer>
- <layer id="1" name="ground" width="31" height="17">
+ <layer id="1" name="ground" width="100" height="17">
   <data encoding="base64" compression="zlib">
-   eJztklEORTAQRSVYh02Ivl348p5VCKvwWLU2IbmZzJXS4sckJzpDczo6SfLGk9FYvsBP5EfQ9rY77k7kfUAf2t5h5/sxwOUT84Pu6WZ3askIGP8L3KWlWjFizc6E5JHcjhrAuhH5VvsEutFTK+A7fMZws561c0hi9C19bu1z34zihBv92x3LGWS1o3OAbkSbLQmbBd+7YP/ckDPFnAPmdizLFzHk
+   eJztlVEKwjAMhvswTyHiJZz1EiI+OD2CT0NPoXhqO+igZGlaSlpbzAcfe+iWlf1Jp5QgCIIgCIIgLLkYB+PVXl1vP9zXvzLa6wNZe5bcSGOsjZ11y1j3RaxJHn52xt56YKxL5fFhfE9u5l5dFXrf0Xi3nhnrtpZH55GzV3OdRTGMxFqNeZyA2sqZB8dZlJppa/OBZeHmsVf+GZoNwXEWpWZKzUeN//OYPFw1cl8JUjN9E2s1zAfs7SmHjVrmQeXQA2sgNMOps5279vTd4ffEdLMI3VsD817cvoH/RthzOrI2fCbWGLA9Yn4BIRwuJw==
   </data>
  </layer>
- <layer id="2" name="decoration" width="31" height="17">
+ <layer id="4" name="decoration" width="100" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUUAqygDgbiHPQcC4QCwKx0AC5SwuItfG4D+bGUUB7QK90oIGGQQCWDtDlkNWMglFACgAAvo0I0Q==
+   eJztl1EKgCAQBdcj1CWyukKeuo5Rd8qPAgkRQ1d3dQceQR9vw7EkAJ6cCuBSON277T2QulsF0wdmd6uID1qID1qID1qID1qIjzxMNvrJnNAjPmjR6v/Hu19T9moNuL8f2gkWJd1y98GF2POlBx/f/U35W9aDD06E1mywGRO6Y87zvzM0lDkzahHysdisSN25ZgjtsUXEOFeM5Hp247mXq9s3K5YbaHBAyg==
   </data>
  </layer>
  <objectgroup id="5" name="collision">
-  <object id="1" x="49.0909" y="48">
-   <polygon points="0,0 -0.181818,4.36364 4.36364,4.54545 4.18182,5.45455 2.54545,6 2.72727,7.45455 394.545,8 394.545,6.18182 394,6 394,4.72727 397.636,4.90909 397.636,0.181818 397.636,0"/>
-  </object>
-  <object id="3" x="-0.181818" y="144">
-   <polygon points="0,0 160,0 160,63.2727 143.818,63.4545 144.545,16 0.181818,16"/>
-  </object>
-  <object id="4" x="0.363636" y="208.182">
-   <polygon points="0,0 255.455,-0.181818 255.636,63.6364 239.091,63.8182 240,15.4545 0,16"/>
-  </object>
-  <object id="8" x="385" y="111.667" width="110.333" height="22.3333"/>
-  <object id="9" x="385.333" y="112" width="21.3333" height="160"/>
+  <object id="2" x="-6.11932" y="160" width="53.1193" height="10.0625"/>
+  <object id="3" x="41" y="160.125" width="6" height="56.2045"/>
+  <object id="5" x="41.1875" y="207.938" width="134.75" height="8.3125"/>
+  <object id="6" x="172" y="208" width="3.9375" height="64"/>
+  <object id="9" x="305" y="176" width="62.0909" height="48"/>
+  <object id="10" x="449" y="128" width="62" height="48"/>
+  <object id="11" x="577" y="191.909" width="61.9091" height="48.0909"/>
+  <object id="12" x="703.909" y="240.182" width="9.63636" height="31.8182"/>
+  <object id="13" x="703.909" y="240" width="224" height="9.18182"/>
+  <object id="14" x="924.091" y="240" width="3.81818" height="32"/>
+  <object id="15" x="1072.09" y="240" width="7.63636" height="31.7273"/>
+  <object id="16" x="1072.18" y="239.818" width="223.727" height="9.63636"/>
+  <object id="17" x="1288.82" y="239.909" width="7" height="31.9091"/>
+  <object id="18" x="1440" y="224.091" width="13.8182" height="47.9091"/>
+  <object id="19" x="1439.91" y="224" width="80.1818" height="15.9091"/>
+  <object id="20" x="1504.09" y="160" width="16.0909" height="79.6364"/>
+  <object id="22" x="1504.09" y="159.909" width="97.6364" height="16.7273"/>
+  <object id="28" x="801" y="95.875" width="126.125" height="8"/>
  </objectgroup>
 </map>

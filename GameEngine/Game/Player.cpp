@@ -64,6 +64,7 @@ void Player::Update(float _deltaTime)
 	{
 		m_position.Y = 0;
 		m_veloY = 0.0f;
+		m_jumpHoldTimer = 0.0f;
 	}
 
 	// Collision detection

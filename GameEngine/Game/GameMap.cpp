@@ -29,10 +29,34 @@ void GameMap::RenderCollisionBoxes(Renderer* _renderer, Camera* _camera)
         m_tileMap->RenderCollisionBoxes(_renderer, _camera);
 }
 
-bool GameMap::CheckGround(float _x, float _y, float _width, float _height, float& _outGroundY) const
+bool GameMap::CheckCollisionTop(float _x, float _y, float _width, float _height, float& _outGroundY) const
 {
     if (!m_tileMap) return false;
-    return m_tileMap->CheckGroundCollision(_x, _y, _width, _height, _outGroundY);
+    return m_tileMap->CheckCollisionTop(_x, _y, _width, _height, _outGroundY);
+}
+
+bool GameMap::CheckCollisionBottom(float _x, float _y, float _width, float _height, float& _outCeilingY) const
+{
+    if (!m_tileMap) return false;
+    return m_tileMap->CheckCollisionBottom(_x, _y, _width, _height, _outCeilingY);
+}
+
+bool GameMap::CheckCollisionLeft(float _x, float _y, float _width, float _height, float& _outWallX) const
+{
+    if (!m_tileMap) return false;
+    return m_tileMap->CheckCollisionLeft(_x, _y, _width, _height, _outWallX);
+}
+
+bool GameMap::CheckCollisionRight(float _x, float _y, float _width, float _height, float& _outWallX) const
+{
+    if (!m_tileMap) return false;
+    return m_tileMap->CheckCollisionRight(_x, _y, _width, _height, _outWallX);
+}
+
+bool GameMap::GetPlayerSpawnPoint(float& outX, float& outY) const
+{
+    if (!m_tileMap) return false;
+    return m_tileMap->GetPlayerSpawnPoint(outX, outY);
 }
 
 int GameMap::GetMapPixelWidth() const

@@ -20,6 +20,7 @@ public:
 	void RenderCollisionBox(Renderer* _renderer, Camera* _camera);
 	void HandleInput(SDL_Event _event);
 	void SetGameMap(GameMap* _map) { m_gameMap = _map; }
+	void SetSpawnPosition(float x, float y);
 	
 	float GetWidth() const { return 69 * scale; }
 	float GetHeight() const { return 44 * scale; }
@@ -30,9 +31,8 @@ public:
 
 private:
 	SpriteSheet* m_sprite;
-	Point m_position; // Screen position
-	float m_worldX;   // World position
-
+	Point m_position;
+	float m_worldX;
 	float scale;
 	
 	// Movement
@@ -43,14 +43,10 @@ private:
 	bool m_isRunning;
 	bool m_shiftDown;
 	bool m_facingRight;
-	float m_prevY;
 
-	// Gravity
+	// Physics
 	float m_gravity;
 	bool m_isGrounded;
-	float m_groundY;
-	
-	// Map reference
 	GameMap* m_gameMap;
 
 	// Jump
@@ -62,8 +58,6 @@ private:
 	float m_jumpHoldTimer;
 	float m_coyoteTime;
 	float m_coyoteTimer;
-
-
 };
 
 #endif // PLAYER_H

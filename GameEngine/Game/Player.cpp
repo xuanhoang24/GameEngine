@@ -8,33 +8,26 @@
 Player::Player()
 {
 	m_sprite = nullptr;
-	m_position = Point(100, 100);
-	m_worldX = 100.0f;
+	m_position = Point(100, 50);
+	m_worldX = 20.0f;
 	scale = 1.0f;
 
-	// Movement
-	m_walkSpeed = 800.0f;
-	m_runSpeed = 900.0f;
+	m_walkSpeed = 150.0f;
+	m_runSpeed = 250.0f;
 	m_veloX = 0;
 	m_veloY = 0;
 	m_isRunning = false;
 	m_shiftDown = false;
 	m_facingRight = true;
-	m_prevY = m_position.Y;
 
-	// Gravity
 	m_gravity = 980.0f;
-	m_groundY = 500.0f;
 	m_isGrounded = false;
-
-	// Map
 	m_gameMap = nullptr;
 
-	// Jump
 	m_jumpPressed = false;
 	m_isJumping = false;
-	m_jumpForce = -350.0f;
-	m_jumpHoldForce = -250.0f;
+	m_jumpForce = -400.0f;
+	m_jumpHoldForce = -300.0f;
 	m_jumpHoldTimer = 0.0f;
 	m_jumpMaxHoldTime = 0.2f;
 	m_coyoteTime = 0.12f;
@@ -57,102 +50,129 @@ void Player::Initialize()
 
 void Player::Update(float _deltaTime)
 {
-#pragma region Calculate Movement
-	m_prevY = m_position.Y;
+	// Clamp deltaTime to prevent huge jumps during loading
+	if (_deltaTime > 0.033f)
+		_deltaTime = 0.033f;
 
-	// Move player in world space
+	// Apply movement
 	m_worldX += m_veloX * _deltaTime;
-
-	// Gravity
 	m_veloY += m_gravity * _deltaTime;
+	m_position.Y += (unsigned int)(m_veloY * _deltaTime);
 
-	// Apply velocity
-	m_position.Y += (m_veloY * _deltaTime);
-#pragma endregion Calculate Movement
-
-#pragma region Collision Detection
-	// Get collision box dimensions
-	float collisionX, collisionY, collisionWidth, collisionHeight;
-	GetCollisionBox(collisionX, collisionY, collisionWidth, collisionHeight);
-
-	// Check ground collision using the collision box
-	float groundY = 0.0f;
-	bool foundGround = m_gameMap->CheckGround(
-		collisionX,
-		collisionY,
-		collisionWidth,
-		collisionHeight,
-		groundY
-	);
-
-	float prevBottom = m_prevY + GetHeight();
-	float currBottom = m_position.Y + GetHeight();
-
-	const float SNAP_EPS = 2.0f;
-	const float FALLBACK_GROUND = 200.0f;
-
-	if (foundGround && m_veloY >= 0 &&
-		prevBottom <= groundY + SNAP_EPS &&
-		currBottom >= groundY - SNAP_EPS)
+	// Prevent player from going above screen
+	if ((int)m_position.Y < 0)
 	{
-		// Calculate offset from collision box bottom to sprite bottom
-		float spriteHeight = GetHeight();
-		float collisionOffsetY = spriteHeight - collisionHeight;
-		
-		// Position sprite so collision box sits on ground
-		m_position.Y = groundY - collisionHeight - collisionOffsetY;
+		m_position.Y = 0;
 		m_veloY = 0.0f;
-		m_isGrounded = true;
-		m_isJumping = false;
 	}
-	else if (!foundGround && m_position.Y + GetHeight() >= FALLBACK_GROUND)
+
+	// Collision detection
+	if (!m_gameMap)
 	{
-		// Fallback ground if no collision objects found
-		m_position.Y = FALLBACK_GROUND - GetHeight();
-		m_veloY = 0.0f;
-		m_isGrounded = true;
-		m_isJumping = false;
+		const float FALLBACK_GROUND = 500.0f;
+		if (m_position.Y + GetHeight() >= FALLBACK_GROUND)
+		{
+			m_position.Y = (unsigned int)(FALLBACK_GROUND - GetHeight());
+			m_veloY = 0.0f;
+			m_isGrounded = true;
+			m_isJumping = false;
+		}
+		else
+			m_isGrounded = false;
 	}
 	else
 	{
-		m_isGrounded = false;
-	}
-#pragma endregion Collision Detection
+		float collisionX, collisionY, collisionWidth, collisionHeight;
+		GetCollisionBox(collisionX, collisionY, collisionWidth, collisionHeight);
 
-#pragma region Animation Logic
+		// Horizontal collision
+		if (m_veloX > 0)
+		{
+			float wallX;
+			if (m_gameMap->CheckCollisionLeft(collisionX, collisionY, collisionWidth, collisionHeight, wallX))
+			{
+				float offsetX = (GetWidth() - collisionWidth) * 0.5f + (m_facingRight ? -8.0f : 8.0f);
+				m_worldX = wallX - collisionWidth - offsetX;
+				m_veloX = 0;
+			}
+		}
+		else if (m_veloX < 0)
+		{
+			float wallX;
+			if (m_gameMap->CheckCollisionRight(collisionX, collisionY, collisionWidth, collisionHeight, wallX))
+			{
+				float offsetX = (GetWidth() - collisionWidth) * 0.5f + (m_facingRight ? -8.0f : 8.0f);
+				m_worldX = wallX - offsetX;
+				m_veloX = 0;
+			}
+		}
+
+		GetCollisionBox(collisionX, collisionY, collisionWidth, collisionHeight);
+		m_isGrounded = false;
+
+		// Vertical collision
+		if (m_veloY >= 0)
+		{
+			float groundY;
+			if (m_gameMap->CheckCollisionTop(collisionX, collisionY, collisionWidth, collisionHeight, groundY))
+			{
+				float offsetY = GetHeight() - collisionHeight;
+				float distanceToGround = groundY - (collisionY + collisionHeight);
+				
+				if (distanceToGround <= 5.0f)
+				{
+					m_position.Y = (unsigned int)(groundY - collisionHeight - offsetY);
+					m_veloY = 0.0f;
+					m_isGrounded = true;
+					m_isJumping = false;
+				}
+			}
+			else
+			{
+				const float FALLBACK_GROUND = 500.0f;
+				if (m_position.Y + GetHeight() >= FALLBACK_GROUND)
+				{
+					m_position.Y = (unsigned int)(FALLBACK_GROUND - GetHeight());
+					m_veloY = 0.0f;
+					m_isGrounded = true;
+					m_isJumping = false;
+				}
+			}
+		}
+		else if (m_veloY < 0)
+		{
+			float ceilingY;
+			if (m_gameMap->CheckCollisionBottom(collisionX, collisionY, collisionWidth, collisionHeight, ceilingY))
+			{
+				float offsetY = GetHeight() - collisionHeight;
+				m_position.Y = (unsigned int)(ceilingY - offsetY);
+				m_veloY = 0.0f;
+				m_jumpHoldTimer = 0.0f;
+			}
+		}
+	}
+
+	// Animation
 	if (m_veloX == 0)
 		m_sprite->Update(EN_AN_IDLE, _deltaTime);
 	else if (m_isRunning)
 		m_sprite->Update(EN_AN_RUN, _deltaTime);
 	else
 		m_sprite->Update(EN_AN_IDLE, _deltaTime);
-#pragma endregion Animation Logic
 
-	// Update Coyote Timer
-	if (m_isGrounded)
-	{
-		// Reset coyote timer
-		m_coyoteTimer = m_coyoteTime;
-	}
-	else
-	{
-		// Countdown while in air
-		m_coyoteTimer -= _deltaTime;
-	}
+	// Jump logic
+	m_coyoteTimer = m_isGrounded ? m_coyoteTime : m_coyoteTimer - _deltaTime;
 
-	// Jump
 	if (m_jumpPressed)
 	{
 		if (!m_isJumping && (m_isGrounded || m_coyoteTimer > 0))
 		{
-			// Initial Jump
 			m_isJumping = true;
 			m_isGrounded = false;
 			m_veloY = m_jumpForce;
 			m_jumpHoldTimer = m_jumpMaxHoldTime;
 		}
 
-		// Hold jump
 		if (m_isJumping && m_jumpHoldTimer > 0)
 		{
 			m_veloY += m_jumpHoldForce * _deltaTime;
@@ -235,55 +255,49 @@ void Player::RenderCollisionBox(Renderer* _renderer, Camera* _camera)
 	SDL_RenderDrawRect(sdl, &collisionRect);
 }
 
+void Player::SetSpawnPosition(float x, float y)
+{
+	m_worldX = x;
+	m_position.Y = (unsigned int)y;
+	m_veloY = 0.0f;
+	m_veloX = 0.0f;
+	m_isGrounded = false;
+	m_isJumping = false;
+}
+
 void Player::GetCollisionBox(float& outX, float& outY, float& outWidth, float& outHeight) const
 {
-	float spriteWidth = GetWidth();
-	float spriteHeight = GetHeight();
-
-	// Collision box dimensions (same as visual debug box)
-	outWidth = spriteWidth * 0.3f;
-	outHeight = spriteHeight * 0.80f;
+	outWidth = GetWidth() * 0.3f;
+	outHeight = GetHeight() * 0.80f;
 	
 	float horizontalOffset = m_facingRight ? -8.0f : 8.0f;
-	outX = m_worldX + (spriteWidth - outWidth) * 0.5f + horizontalOffset;
-	outY = m_position.Y + (spriteHeight - outHeight);
+	outX = m_worldX + (GetWidth() - outWidth) * 0.5f + horizontalOffset;
+	outY = m_position.Y + (GetHeight() - outHeight);
 }
 
 void Player::HandleInput(SDL_Event _event)
 {
-	Keyboard* kb = InputController::Instance().KB();
 	const Uint8* keyState = SDL_GetKeyboardState(NULL);
+	m_shiftDown = keyState[SDL_SCANCODE_LSHIFT] || keyState[SDL_SCANCODE_RSHIFT];
 	float speed = m_shiftDown ? m_runSpeed : m_walkSpeed;
 
-	// SHIFT DOWN
-	m_shiftDown = keyState[SDL_SCANCODE_LSHIFT] || keyState[SDL_SCANCODE_RSHIFT];
-	// A Key
 	if (keyState[SDL_SCANCODE_A])
 	{
 		m_veloX = -speed;
 		m_isRunning = m_shiftDown;
 		m_facingRight = false;
 	}
-	// D Key
 	else if (keyState[SDL_SCANCODE_D])
 	{
 		m_veloX = speed;
 		m_isRunning = m_shiftDown;
 		m_facingRight = true;
 	}
-	else // Release A or D
+	else
 	{
 		m_veloX = 0;
 		m_isRunning = false;
 	}
 
-	// Space key
-	if (keyState[SDL_SCANCODE_SPACE])
-	{
-		m_jumpPressed = true;
-	}
-	else
-	{
-		m_jumpPressed = false;
-	}
+	m_jumpPressed = keyState[SDL_SCANCODE_SPACE];
 }

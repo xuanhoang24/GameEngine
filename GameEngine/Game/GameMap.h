@@ -18,7 +18,13 @@ public:
     void RenderCollisionBoxes(Renderer* _renderer, Camera* _camera);
     
     // Collision
-    bool CheckGround(float _x, float _y, float _width, float _height, float& _outGroundY) const;
+    bool CheckCollisionTop(float _x, float _y, float _width, float _height, float& _outGroundY) const;
+    bool CheckCollisionBottom(float _x, float _y, float _width, float _height, float& _outCeilingY) const;
+    bool CheckCollisionLeft(float _x, float _y, float _width, float _height, float& _outWallX) const;
+    bool CheckCollisionRight(float _x, float _y, float _width, float _height, float& _outWallX) const;
+    
+    // Spawn point
+    bool GetPlayerSpawnPoint(float& outX, float& outY) const;
     
     // Getters
     int GetMapPixelWidth() const;

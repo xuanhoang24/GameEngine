@@ -22,7 +22,13 @@ public:
     void RenderCollisionBoxes(Renderer* _renderer, Camera* _camera);
     
     // Collision
-    bool CheckGroundCollision(float _x, float _y, float _width, float _height, float& _outGroundY) const;
+    bool CheckCollisionTop(float _x, float _y, float _width, float _height, float& _outGroundY) const;
+    bool CheckCollisionBottom(float _x, float _y, float _width, float _height, float& _outCeilingY) const;
+    bool CheckCollisionLeft(float _x, float _y, float _width, float _height, float& _outWallX) const;
+    bool CheckCollisionRight(float _x, float _y, float _width, float _height, float& _outWallX) const;
+    
+    // Spawn point
+    bool GetPlayerSpawnPoint(float& outX, float& outY) const;
     
     // Getters
     int GetMapWidth() const { return m_mapWidth; }
@@ -63,6 +69,7 @@ private:
     void LoadLayers(); 
     void LoadImageLayers();
     void LoadCollisionObjects();
+    void LoadSpawnPoint();
     TilesetInfo* FindTileset(int gid);
 
     // Members
@@ -72,6 +79,11 @@ private:
     std::vector<LayerInfo>   m_layers;
     std::vector<CollisionShape> m_collisionShapes;
     std::vector<ImageLayerInfo> m_imageLayers;
+
+    // Spawn point
+    float m_spawnX = 0.0f;
+    float m_spawnY = 0.0f;
+    bool m_hasSpawnPoint = false;
 
     // Map info
     int m_mapWidth = 0;

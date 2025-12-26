@@ -50,6 +50,13 @@ void GameController::Initialize()
     
     // Connect player to map for collision
     m_player->SetGameMap(g_Map);
+    
+    // Set player spawn position from map
+    float spawnX, spawnY;
+    if (g_Map->GetPlayerSpawnPoint(spawnX, spawnY))
+    {
+        m_player->SetSpawnPosition(spawnX, spawnY);
+    }
 }
 
 void GameController::ShutDown()
@@ -80,7 +87,7 @@ void GameController::HandleInput(SDL_Event _event)
 void GameController::RunGame()
 {
     Timing* t = &Timing::Instance();
-    t->SetFPS(80);
+    t->SetFPS(60);
 
     Initialize();
 

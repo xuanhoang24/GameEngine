@@ -26,6 +26,7 @@ bool TileMap::Load(const string& _path)
     LoadImageLayers();
     LoadLayers();
     LoadCollisionObjects();
+    LoadSpawnPoint();
 
     return true;
 }
@@ -263,19 +264,54 @@ void TileMap::LoadImageLayers()
     }
 }
 
-bool TileMap::CheckGroundCollision(
-    float px, float py,
-    float pw, float ph,
-    float& outGroundY
-) const
+void TileMap::LoadSpawnPoint()
+{
+    m_hasSpawnPoint = false;
+
+    const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
+
+    for (size_t i = 0; i < layers.size(); ++i)
+    {
+        if (layers[i]->getType() != tmx::Layer::Type::Object)
+            continue;
+
+        if (layers[i]->getName() != "playerSpawn")
+            continue;
+
+        const tmx::ObjectGroup& objLayer = layers[i]->getLayerAs<tmx::ObjectGroup>();
+        const std::vector<tmx::Object>& objects = objLayer.getObjects();
+
+        if (objects.size() > 0)
+        {
+            const tmx::Object& spawnObj = objects[0];
+            m_spawnX = spawnObj.getPosition().x;
+            m_spawnY = spawnObj.getPosition().y;
+            m_hasSpawnPoint = true;
+            
+            break;
+        }
+    }
+}
+
+bool TileMap::GetPlayerSpawnPoint(float& outX, float& outY) const
+{
+    if (m_hasSpawnPoint)
+    {
+        outX = m_spawnX;
+        outY = m_spawnY;
+        return true;
+    }
+    return false;
+}
+
+// Check collision from top (player standing on box)
+bool TileMap::CheckCollisionTop(float px, float py, float pw, float ph, float& outGroundY) const
 {
     float playerBottom = py + ph;
     float bestY = 100000.0f;
     bool found = false;
     
     int mapPixelWidth = GetMapPixelWidth();
-    
-    // Determine which map instances the player might be colliding with
     int startMapIndex = (int)floor((px - pw) / mapPixelWidth);
     int endMapIndex = (int)ceil((px + pw * 2) / mapPixelWidth);
 
@@ -287,50 +323,19 @@ bool TileMap::CheckGroundCollision(
         {
             if (shape.type == CollisionType::Rectangle)
             {
-                // Apply offset to collision shape (including map repetition)
                 float shapeX = shape.x + mapOffsetX;
                 float shapeY = shape.y;
+                float shapeRight = shapeX + shape.width;
+                float shapeBottom = shapeY + shape.height;
 
                 // Check horizontal overlap
-                if (px + pw <= shapeX) continue;
-                if (px >= shapeX + shape.width) continue;
+                if (px + pw <= shapeX || px >= shapeRight) continue;
 
-                // Rectangle's top edge is the ground surface
-                if (playerBottom <= shapeY + 2.0f && shapeY < bestY)
+                // Only detect platforms that the player is close to landing on
+                if (shapeY >= py && shapeY < bestY)
                 {
                     bestY = shapeY;
                     found = true;
-                }
-            }
-            else if (shape.type == CollisionType::Polygon)
-            {
-                // Check each edge of the polygon
-                for (size_t i = 0; i < shape.points.size(); ++i)
-                {
-                    const Point& a = shape.points[i];
-                    const Point& b = shape.points[(i + 1) % shape.points.size()];
-
-                    // Apply offset to polygon points (including map repetition)
-                    float aX = a.X + mapOffsetX;
-                    float bX = b.X + mapOffsetX;
-                    float aY = a.Y;
-                    float bY = b.Y;
-
-                    // Check if edge is horizontal (or nearly horizontal)
-                    if (abs((int)aY - (int)bY) > 2) continue;
-
-                    float minX = (aX < bX) ? aX : bX;
-                    float maxX = (aX > bX) ? aX : bX;
-
-                    // Check horizontal overlap
-                    if (px + pw > minX && px < maxX)
-                    {
-                        if (playerBottom <= aY + 5.0f && aY < bestY)
-                        {
-                            bestY = aY;
-                            found = true;
-                        }
-                    }
                 }
             }
         }
@@ -341,7 +346,146 @@ bool TileMap::CheckGroundCollision(
         outGroundY = bestY;
         return true;
     }
+    return false;
+}
 
+// Check collision from bottom (player hitting head on box)
+bool TileMap::CheckCollisionBottom(float px, float py, float pw, float ph, float& outCeilingY) const
+{
+    float playerTop = py;
+    float bestY = -100000.0f;
+    bool found = false;
+    
+    int mapPixelWidth = GetMapPixelWidth();
+    int startMapIndex = (int)floor((px - pw) / mapPixelWidth);
+    int endMapIndex = (int)ceil((px + pw * 2) / mapPixelWidth);
+
+    for (int mapIndex = startMapIndex; mapIndex <= endMapIndex; ++mapIndex)
+    {
+        float mapOffsetX = mapIndex * mapPixelWidth;
+        
+        for (const auto& shape : m_collisionShapes)
+        {
+            if (shape.type == CollisionType::Rectangle)
+            {
+                float shapeX = shape.x + mapOffsetX;
+                float shapeY = shape.y;
+                float shapeRight = shapeX + shape.width;
+                float shapeBottom = shapeY + shape.height;
+
+                // Check horizontal overlap
+                if (px + pw <= shapeX || px >= shapeRight) continue;
+
+                // Check if player is jumping into the bottom of the box
+                // Only check boxes that are above the player
+                if (playerTop <= shapeBottom && playerTop >= shapeBottom - 5.0f)
+                {
+                    // Find the closest ceiling above the player
+                    if (shapeBottom <= py + ph && shapeBottom > bestY)
+                    {
+                        bestY = shapeBottom;
+                        found = true;
+                    }
+                }
+            }
+        }
+    }
+
+    if (found)
+    {
+        outCeilingY = bestY;
+        return true;
+    }
+    return false;
+}
+
+// Check collision from left (player hitting box from left side)
+bool TileMap::CheckCollisionLeft(float px, float py, float pw, float ph, float& outWallX) const
+{
+    float playerRight = px + pw;
+    float bestX = 100000.0f;
+    bool found = false;
+    
+    int mapPixelWidth = GetMapPixelWidth();
+    int startMapIndex = (int)floor((px - pw) / mapPixelWidth);
+    int endMapIndex = (int)ceil((px + pw * 2) / mapPixelWidth);
+
+    for (int mapIndex = startMapIndex; mapIndex <= endMapIndex; ++mapIndex)
+    {
+        float mapOffsetX = mapIndex * mapPixelWidth;
+        
+        for (const auto& shape : m_collisionShapes)
+        {
+            if (shape.type == CollisionType::Rectangle)
+            {
+                float shapeX = shape.x + mapOffsetX;
+                float shapeY = shape.y;
+                float shapeRight = shapeX + shape.width;
+                float shapeBottom = shapeY + shape.height;
+
+                // Check vertical overlap
+                if (py + ph <= shapeY || py >= shapeBottom) continue;
+
+                // Check if player is moving into the left side of the box
+                if (playerRight >= shapeX && playerRight <= shapeX + 5.0f && shapeX < bestX)
+                {
+                    bestX = shapeX;
+                    found = true;
+                }
+            }
+        }
+    }
+
+    if (found)
+    {
+        outWallX = bestX;
+        return true;
+    }
+    return false;
+}
+
+// Check collision from right (player hitting box from right side)
+bool TileMap::CheckCollisionRight(float px, float py, float pw, float ph, float& outWallX) const
+{
+    float playerLeft = px;
+    float bestX = -100000.0f;
+    bool found = false;
+    
+    int mapPixelWidth = GetMapPixelWidth();
+    int startMapIndex = (int)floor((px - pw) / mapPixelWidth);
+    int endMapIndex = (int)ceil((px + pw * 2) / mapPixelWidth);
+
+    for (int mapIndex = startMapIndex; mapIndex <= endMapIndex; ++mapIndex)
+    {
+        float mapOffsetX = mapIndex * mapPixelWidth;
+        
+        for (const auto& shape : m_collisionShapes)
+        {
+            if (shape.type == CollisionType::Rectangle)
+            {
+                float shapeX = shape.x + mapOffsetX;
+                float shapeY = shape.y;
+                float shapeRight = shapeX + shape.width;
+                float shapeBottom = shapeY + shape.height;
+
+                // Check vertical overlap
+                if (py + ph <= shapeY || py >= shapeBottom) continue;
+
+                // Check if player is moving into the right side of the box
+                if (playerLeft <= shapeRight && playerLeft >= shapeRight - 5.0f && shapeRight > bestX)
+                {
+                    bestX = shapeRight;
+                    found = true;
+                }
+            }
+        }
+    }
+
+    if (found)
+    {
+        outWallX = bestX;
+        return true;
+    }
     return false;
 }
 

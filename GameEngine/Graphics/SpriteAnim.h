@@ -19,6 +19,7 @@ public:
 	void ToString() override; 
 
 	void ClearMemory();
+	void Reset() { ClearMemory(); }
 	void Create(short _clipStart, short _clipCount, float _clipSpeed);
 	void Update(float _deltaTime);
 

@@ -3,7 +3,7 @@
 
 #include "../Core/StandardIncludes.h"
 #include "../Graphics/Renderer.h"
-#include "../Graphics/SpriteSheet.h"
+#include "../Graphics/AnimatedSpriteLoader.h"
 
 class GameMap;
 class Camera;
@@ -22,15 +22,15 @@ public:
 	void SetGameMap(GameMap* _map) { m_gameMap = _map; }
 	void SetSpawnPosition(float x, float y);
 	
-	float GetWidth() const { return 69 * scale; }
-	float GetHeight() const { return 44 * scale; }
+	float GetWidth() const { return 16 * scale; }
+	float GetHeight() const { return 16 * scale; }
 	float GetWorldX() const { return m_worldX; }
 	float GetWorldY() const { return m_position.Y; }
 
 	void GetCollisionBox(float& outX, float& outY, float& outWidth, float& outHeight) const;
 
 private:
-	SpriteSheet* m_sprite;
+	AnimatedSpriteLoader* m_animLoader;
 	Point m_position;
 	float m_worldX;
 	float scale;

@@ -19,10 +19,26 @@ void PNGReader::ProcessAsset(Asset* _rawPNG, ImageInfo* _imageInfo)
     SDL_Surface* surface = IMG_Load_RW(rw, 0);
     M_ASSERT(surface != nullptr, "IMG_Load_RW failed (invalid PNG)");
 
-    // Convert to 32-bit RGBA
-    SDL_Surface* conv = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32, 0);
+    // Convert to 32-bit BGRA to match renderer's BGR byte order
+    SDL_Surface* conv = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_BGRA32, 0);
     SDL_FreeSurface(surface);
     M_ASSERT(conv != nullptr, "SDL_ConvertSurfaceFormat failed");
+
+    // Flip vertically to match TGA format
+    int pitch = conv->pitch;
+    int height = conv->h;
+    unsigned char* pixels = (unsigned char*)conv->pixels;
+    unsigned char* temp = new unsigned char[pitch];
+    
+    for (int i = 0; i < height / 2; i++)
+    {
+        unsigned char* row1 = pixels + i * pitch;
+        unsigned char* row2 = pixels + (height - i - 1) * pitch;
+        memcpy(temp, row1, pitch);
+        memcpy(row1, row2, pitch);
+        memcpy(row2, temp, pitch);
+    }
+    delete[] temp;
 
     _imageInfo->Width = conv->w;
     _imageInfo->Height = conv->h;
@@ -40,6 +56,7 @@ void PNGReader::ProcessAsset(Asset* _rawPNG, ImageInfo* _imageInfo)
     memcpy(_rawPNG->GetData(), conv->pixels, newSize);
 
     SDL_FreeSurface(conv);
+    SDL_RWclose(rw);
 }
 
 Asset* PNGReader::LoadPNGFromFile(string _file, ImageInfo* _imageInfo)

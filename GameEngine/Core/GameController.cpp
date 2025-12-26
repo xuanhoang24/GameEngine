@@ -5,6 +5,7 @@
 #include "../Game/Player.h"
 #include "../Graphics/SpriteAnim.h"
 #include "../Graphics/SpriteSheet.h"
+#include "../Graphics/Texture.h"
 #include "../Resources/AssetController.h"
 #include "../Input/Keyboard.h"
 #include "../Core/Timing.h"
@@ -31,6 +32,7 @@ void GameController::Initialize()
     AssetController::Instance().Initialize(50000000);
     SpriteAnim::Pool = new ObjectPool<SpriteAnim>();
     SpriteSheet::Pool = new ObjectPool<SpriteSheet>();
+    Texture::Pool = new ObjectPool<Texture>();
 
     // Systems
     m_renderer = &Renderer::Instance();
@@ -72,6 +74,9 @@ void GameController::ShutDown()
 
     delete SpriteSheet::Pool;
     SpriteSheet::Pool = nullptr;
+
+    delete Texture::Pool;
+    Texture::Pool = nullptr;
 }
 
 void GameController::HandleInput(SDL_Event _event)

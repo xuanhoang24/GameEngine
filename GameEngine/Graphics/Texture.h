@@ -25,6 +25,7 @@ public:
     void Deserialize(std::istream& _stream) override;
     void ToString() override;
     void Load(string _guid);
+    void Reset() { m_imageInfo = {}; m_texture = nullptr; m_blendMode = SDL_BLENDMODE_BLEND; m_blendAlpha = 255; }
 
     //Members
     static ObjectPool<Texture>* Pool;

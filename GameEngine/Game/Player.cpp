@@ -7,7 +7,7 @@
 
 Player::Player()
 {
-	m_sprite = nullptr;
+	m_animLoader = nullptr;
 	m_position = Point(100, 50);
 	m_worldX = 20.0f;
 	scale = 1.0f;
@@ -36,16 +36,22 @@ Player::Player()
 
 Player::~Player()
 {
+	if (m_animLoader)
+	{
+		delete m_animLoader;
+		m_animLoader = nullptr;
+	}
 }
 
 void Player::Initialize()
 {
-	m_sprite = SpriteSheet::Pool->GetResource();
-	m_sprite->Load("../Assets/Textures/Warrior.tga");
-	m_sprite->SetSize(17, 6, 69, 44);
-	m_sprite->AddAnimation(EN_AN_IDLE, 0, 6, 6.0f);
-	m_sprite->AddAnimation(EN_AN_RUN, 6, 8, 6.0f);
-	m_sprite->AddAnimation(EN_AN_JUMP_UP_FALL, 42, 8, 6.0f);
+	m_animLoader = new AnimatedSpriteLoader();
+	
+	m_animLoader->LoadAnimation("idle", "../Assets/Textures/Player/idle.png", 1, 4, 16, 16, 4, 8.0f);
+	
+	m_animLoader->LoadAnimation("run", "../Assets/Textures/Player/run.png", 1, 4, 16, 16, 4, 12.0f);
+	
+	m_animLoader->LoadAnimation("jumpandfall", "../Assets/Textures/Player/jumpandfall.png", 1, 2, 16, 16, 2, 8.0f);
 }
 
 void Player::Update(float _deltaTime)
@@ -92,7 +98,7 @@ void Player::Update(float _deltaTime)
 			float wallX;
 			if (m_gameMap->CheckCollisionLeft(collisionX, collisionY, collisionWidth, collisionHeight, wallX))
 			{
-				float offsetX = (GetWidth() - collisionWidth) * 0.5f + (m_facingRight ? -8.0f : 8.0f);
+				float offsetX = (GetWidth() - collisionWidth) * 0.5f;
 				m_worldX = wallX - collisionWidth - offsetX;
 				m_veloX = 0;
 			}
@@ -102,7 +108,7 @@ void Player::Update(float _deltaTime)
 			float wallX;
 			if (m_gameMap->CheckCollisionRight(collisionX, collisionY, collisionWidth, collisionHeight, wallX))
 			{
-				float offsetX = (GetWidth() - collisionWidth) * 0.5f + (m_facingRight ? -8.0f : 8.0f);
+				float offsetX = (GetWidth() - collisionWidth) * 0.5f;
 				m_worldX = wallX - offsetX;
 				m_veloX = 0;
 			}
@@ -153,14 +159,6 @@ void Player::Update(float _deltaTime)
 		}
 	}
 
-	// Animation
-	if (m_veloX == 0)
-		m_sprite->Update(EN_AN_IDLE, _deltaTime);
-	else if (m_isRunning)
-		m_sprite->Update(EN_AN_RUN, _deltaTime);
-	else
-		m_sprite->Update(EN_AN_IDLE, _deltaTime);
-
 	// Jump logic
 	m_coyoteTimer = m_isGrounded ? m_coyoteTime : m_coyoteTimer - _deltaTime;
 
@@ -184,8 +182,8 @@ void Player::Update(float _deltaTime)
 
 void Player::Render(Renderer* _renderer, Camera* _camera)
 {
-	float width = 69 * scale;
-	float height = 44 * scale;
+	float width = 16 * scale;
+	float height = 16 * scale;
 
 	// Convert world position to screen position using camera
 	float screenX = _camera ? _camera->WorldToScreenX(m_worldX) : m_worldX;
@@ -198,44 +196,35 @@ void Player::Render(Renderer* _renderer, Camera* _camera)
 		(unsigned)(screenX + width),
 		(unsigned)(screenY + height));
 
+	// Flip sprite horizontally when facing left
 	if (!m_facingRight)
 	{
 		destRect = Rect(
 			(unsigned)(screenX + width),
 			(unsigned)screenY,
 			(unsigned)screenX,
-			(unsigned)(screenY + height)
-		);
+			(unsigned)(screenY + height));
 	}
 
-	// Get the part of the sprite sheet for the current animation frame
-	Rect srcRect(0, 0, 0, 0);
-
+	string currentAnim = "idle";
 	if (!m_isGrounded)
-		srcRect = m_sprite->Update(EN_AN_JUMP_UP_FALL, Timing::Instance().GetDeltaTime());
-	else if (m_veloX == 0)
-		srcRect = m_sprite->Update(EN_AN_IDLE, Timing::Instance().GetDeltaTime());
-	else if (m_isRunning)
-		srcRect = m_sprite->Update(EN_AN_RUN, Timing::Instance().GetDeltaTime());
-	else
-		srcRect = m_sprite->Update(EN_AN_IDLE, Timing::Instance().GetDeltaTime());
+		currentAnim = "jumpandfall";
+	else if (m_veloX != 0)
+		currentAnim = "run";
 
-	_renderer->RenderTexture(m_sprite, srcRect, destRect);
+	Rect srcRect = m_animLoader->UpdateAnimation(currentAnim, Timing::Instance().GetDeltaTime());
+	Texture* currentTexture = m_animLoader->GetTexture(currentAnim);
+
+	if (currentTexture)
+		_renderer->RenderTexture(currentTexture, srcRect, destRect);
 }
 
 void Player::RenderCollisionBox(Renderer* _renderer, Camera* _camera)
 {
-	float spriteWidth = GetWidth();
-	float spriteHeight = GetHeight();
-
-	float collisionWidth = spriteWidth * 0.3f;
-	float collisionHeight = spriteHeight * 0.80f;
-	
-	float horizontalOffset = m_facingRight ? -8.0f : 8.0f;
-	float collisionX = m_worldX + (spriteWidth - collisionWidth) * 0.5f + horizontalOffset;
-	
-	// Align to feet
-	float collisionY = m_position.Y + (spriteHeight - collisionHeight);
+	float collisionWidth = 16.0f * scale;
+	float collisionHeight = 16.0f * scale;
+	float collisionX = m_worldX + (GetWidth() - collisionWidth) * 0.5f;
+	float collisionY = m_position.Y + GetHeight() - collisionHeight;
 
 	// Convert world position to screen position using camera
 	float screenX = _camera ? _camera->WorldToScreenX(collisionX) : collisionX;
@@ -268,12 +257,10 @@ void Player::SetSpawnPosition(float x, float y)
 
 void Player::GetCollisionBox(float& outX, float& outY, float& outWidth, float& outHeight) const
 {
-	outWidth = GetWidth() * 0.3f;
-	outHeight = GetHeight() * 0.80f;
-	
-	float horizontalOffset = m_facingRight ? -8.0f : 8.0f;
-	outX = m_worldX + (GetWidth() - outWidth) * 0.5f + horizontalOffset;
-	outY = m_position.Y + (GetHeight() - outHeight);
+	outWidth = 16.0f * scale;
+	outHeight = 16.0f * scale;
+	outX = m_worldX + (GetWidth() - outWidth) * 0.5f;
+	outY = m_position.Y + GetHeight() - outHeight;
 }
 
 void Player::HandleInput(SDL_Event _event)

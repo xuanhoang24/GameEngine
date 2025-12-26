@@ -155,6 +155,7 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Graphics\SpriteSheet.cpp" />
     <ClCompile Include="Graphics\SpriteAnim.cpp" />
+    <ClCompile Include="Graphics\AnimatedSpriteLoader.cpp" />
     <ClCompile Include="Graphics\TileMap.cpp" />
     <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Graphics\TTFont.cpp" />
@@ -170,6 +171,7 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClInclude Include="Graphics\Texture.h" />
     <ClInclude Include="Graphics\SpriteSheet.h" />
     <ClInclude Include="Graphics\SpriteAnim.h" />
+    <ClInclude Include="Graphics\AnimatedSpriteLoader.h" />
     <ClInclude Include="Graphics\TileMap.h" />
     <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="Graphics\TTFont.h" />

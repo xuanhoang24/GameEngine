@@ -6,6 +6,7 @@
 #include <tmxlite/TileLayer.hpp>
 #include <tmxlite/ObjectGroup.hpp>
 #include <tmxlite/ImageLayer.hpp>
+#include <tmxlite/LayerGroup.hpp>
 #include "../Graphics/Renderer.h"
 #include "../Graphics/Texture.h"
 #include "../Graphics/Camera.h"

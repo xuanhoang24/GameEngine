@@ -272,24 +272,35 @@ void TileMap::LoadSpawnPoint()
 
     for (size_t i = 0; i < layers.size(); ++i)
     {
-        if (layers[i]->getType() != tmx::Layer::Type::Object)
+        if (layers[i]->getType() != tmx::Layer::Type::Group)
             continue;
 
-        if (layers[i]->getName() != "playerSpawn")
-            continue;
+        const tmx::LayerGroup& group = layers[i]->getLayerAs<tmx::LayerGroup>();
+        const std::vector<std::unique_ptr<tmx::Layer>>& subLayers = group.getLayers();
 
-        const tmx::ObjectGroup& objLayer = layers[i]->getLayerAs<tmx::ObjectGroup>();
-        const std::vector<tmx::Object>& objects = objLayer.getObjects();
-
-        if (objects.size() > 0)
+        for (size_t j = 0; j < subLayers.size(); ++j)
         {
-            const tmx::Object& spawnObj = objects[0];
-            m_spawnX = spawnObj.getPosition().x;
-            m_spawnY = spawnObj.getPosition().y;
-            m_hasSpawnPoint = true;
-            
-            break;
+            if (subLayers[j]->getType() != tmx::Layer::Type::Object)
+                continue;
+
+            if (subLayers[j]->getName() != "playerSpawn")
+                continue;
+
+            const tmx::ObjectGroup& objLayer = subLayers[j]->getLayerAs<tmx::ObjectGroup>();
+            const std::vector<tmx::Object>& objects = objLayer.getObjects();
+
+            if (objects.size() > 0)
+            {
+                const tmx::Object& spawnObj = objects[0];
+                m_spawnX = spawnObj.getPosition().x;
+                m_spawnY = spawnObj.getPosition().y;
+                m_hasSpawnPoint = true;
+                break;
+            }
         }
+
+        if (m_hasSpawnPoint)
+            break;
     }
 }
 

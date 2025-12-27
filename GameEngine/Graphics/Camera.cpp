@@ -8,6 +8,7 @@ Camera::Camera()
 	m_y = 0.0f;
 	m_targetPlayer = nullptr;
 	m_renderer = nullptr;
+	m_maxX = 0.0f; // Track furthest camera position
 }
 
 Camera::~Camera()
@@ -44,7 +45,16 @@ void Camera::FollowPlayer(Player* _player, Renderer* _renderer)
 	if (targetX < 0)
 		targetX = 0;
 
-	m_x = targetX;
+	// Prevent camera from moving backward
+	if (targetX > m_maxX)
+	{
+		m_maxX = targetX;
+		m_x = targetX;
+	}
+	else
+	{
+		m_x = m_maxX; // Keep camera at furthest position
+	}
 	
 	// Keep camera at y=0 to show full map height
 	m_y = 0;

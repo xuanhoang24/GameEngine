@@ -9,6 +9,7 @@ Enemy::Enemy()
 	m_worldX = 0.0f;
 	m_worldY = 0.0f;
 	m_isActive = true;
+	m_destroyedInMapLoop = -1; // -1 means never destroyed
 	m_type = EnemyType::Ghost;
 	m_moveSpeed = 50.0f;
 	m_direction = 1.0f;
@@ -195,21 +196,29 @@ void Enemy::CheckRespawn(float _cameraX, int _mapPixelWidth)
 		return;
 	}
 	
-	// Add a buffer distance to respawn before player reaches the map start
-	float respawnBuffer = 400.0f; // Respawn 400 pixels before the next map starts
-	float adjustedCameraX = _cameraX + respawnBuffer;
+	// Add buffer to respawn entities before entering the next map
+	float respawnBuffer = 400.0f; // Respawn 400 pixels before next map starts
 	
-	// Calculate which map loop the camera is currently in (with buffer)
-	int currentMapLoop = (int)floor(adjustedCameraX / _mapPixelWidth);
+	// Calculate which map loop the camera is currently in (with buffer for lookahead)
+	int currentMapLoop = (int)floor((_cameraX + respawnBuffer) / _mapPixelWidth);
 	int lastMapLoop = (int)floor((m_lastCameraX + respawnBuffer) / _mapPixelWidth);
 	
-	// If entered a new map loop, respawn the enemy
+	// If entered a new map loop (with buffer)
 	if (currentMapLoop > lastMapLoop)
 	{
+		// Always respawn when entering a new map loop
 		m_isActive = true;
-		m_lastCameraX = _cameraX;
+		m_destroyedInMapLoop = -1; // Reset destroyed status for new loop
 		
 		// Reset direction randomly
 		m_direction = (rand() % 2 == 0) ? -1.0f : 1.0f;
+		
+		m_lastCameraX = _cameraX;
+	}
+	else if (!m_isActive && m_destroyedInMapLoop == -1)
+	{
+		// Track when enemy is destroyed in current loop (without buffer)
+		int actualCurrentLoop = (int)floor(_cameraX / _mapPixelWidth);
+		m_destroyedInMapLoop = actualCurrentLoop;
 	}
 }

@@ -9,6 +9,7 @@ Coin::Coin()
 	m_worldX = 0.0f;
 	m_worldY = 0.0f;
 	m_isActive = true;
+	m_collectedInMapLoop = -1; // -1 means never collected
 	m_lastCameraX = 0.0f;
 }
 
@@ -46,19 +47,27 @@ void Coin::CheckRespawn(float _cameraX, int _mapPixelWidth)
 		return;
 	}
 	
-	// Add a buffer distance to respawn before player reaches the map start
-	float respawnBuffer = 400.0f; // Respawn 400 pixels before the next map starts
-	float adjustedCameraX = _cameraX + respawnBuffer;
+	// Add buffer to respawn entities before entering the next map
+	float respawnBuffer = 400.0f; // Respawn 400 pixels before next map starts
 	
-	// Calculate which map loop the camera is currently in (with buffer)
-	int currentMapLoop = (int)floor(adjustedCameraX / _mapPixelWidth);
+	// Calculate which map loop the camera is currently in (with buffer for lookahead)
+	int currentMapLoop = (int)floor((_cameraX + respawnBuffer) / _mapPixelWidth);
 	int lastMapLoop = (int)floor((m_lastCameraX + respawnBuffer) / _mapPixelWidth);
 	
-	// If entered a new map loop, respawn the coin
+	// If entered a new map loop (with buffer)
 	if (currentMapLoop > lastMapLoop)
 	{
+		// Always respawn when entering a new map loop
 		m_isActive = true;
+		m_collectedInMapLoop = -1; // Reset collected status for new loop
+		
 		m_lastCameraX = _cameraX;
+	}
+	else if (!m_isActive && m_collectedInMapLoop == -1)
+	{
+		// Track when coin is collected in current loop (without buffer)
+		int actualCurrentLoop = (int)floor(_cameraX / _mapPixelWidth);
+		m_collectedInMapLoop = actualCurrentLoop;
 	}
 }
 

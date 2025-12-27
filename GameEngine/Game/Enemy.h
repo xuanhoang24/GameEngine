@@ -53,6 +53,7 @@ private:
 	float m_worldX;
 	float m_worldY;
 	bool m_isActive;
+	int m_destroyedInMapLoop; // Track which map loop enemy was destroyed in (-1 = never destroyed)
 	EnemyType m_type;
 	float m_lastCameraX;
 	

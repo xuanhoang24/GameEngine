@@ -131,6 +131,20 @@ void GameController::RunGame()
 
         m_player->Update(t->GetDeltaTime());
         
+        // Update camera to follow player (before constraining player)
+        m_camera->FollowPlayer(m_player, m_renderer);
+        
+        // Constrain player to camera view (prevent going left off-screen)
+        float cameraLeftEdge = m_camera->GetMaxX();
+        float playerWorldX = m_player->GetWorldX();
+        
+        // If player tries to go left of the camera's left edge, clamp position
+        if (playerWorldX < cameraLeftEdge)
+        {
+            // Set player position to camera left edge
+            m_player->SetSpawnPosition(cameraLeftEdge + m_player->GetWidth() * 0.5f, m_player->GetWorldY() + m_player->GetHeight());
+        }
+        
         // Get camera position for respawn checks
         float cameraX = m_camera->GetX();
         int mapPixelWidth = 1600; // 100 tiles * 16 pixels
@@ -152,9 +166,6 @@ void GameController::RunGame()
         // Check collisions
         CheckPlayerCoinCollisions();
         CheckPlayerEnemyCollisions();
-        
-        // Update camera to follow player
-        m_camera->FollowPlayer(m_player, m_renderer);
         
         g_Map->Render(m_renderer, m_camera);
         

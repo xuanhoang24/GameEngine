@@ -42,6 +42,7 @@ private:
 	float m_worldX;
 	float m_worldY;
 	bool m_isActive;
+	int m_collectedInMapLoop; // Track which map loop coin was collected in (-1 = never collected)
 	float m_lastCameraX;
 };
 

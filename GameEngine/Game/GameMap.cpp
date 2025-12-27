@@ -66,6 +66,19 @@ const vector<pair<float, float>>& GameMap::GetCoinSpawnPoints() const
     return m_tileMap->GetCoinSpawnPoints();
 }
 
+const vector<pair<float, float>>& GameMap::GetEnemySpawnPoints() const
+{
+    static vector<pair<float, float>> empty;
+    if (!m_tileMap) return empty;
+    return m_tileMap->GetEnemySpawnPoints();
+}
+
+bool GameMap::GetEnemyZoneBoundaries(float spawnX, float spawnY, float& outLeftX, float& outRightX) const
+{
+    if (!m_tileMap) return false;
+    return m_tileMap->GetEnemyZoneBoundaries(spawnX, spawnY, outLeftX, outRightX);
+}
+
 int GameMap::GetMapPixelWidth() const
 {
     if (m_tileMap)

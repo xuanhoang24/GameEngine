@@ -230,6 +230,7 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
   <ItemGroup>
     <ClCompile Include="Game\Player.cpp" />
     <ClCompile Include="Game\Coin.cpp" />
+    <ClCompile Include="Game\Enemy.cpp" />
     <ClCompile Include="Game\GameMap.cpp" />
     <ClCompile Include="Game\Level.cpp" />
     <ClCompile Include="Game\Unit.cpp" />
@@ -237,6 +238,7 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
   <ItemGroup>
     <ClInclude Include="Game\Player.h" />
     <ClInclude Include="Game\Coin.h" />
+    <ClInclude Include="Game\Enemy.h" />
     <ClInclude Include="Game\GameMap.h" />
     <ClInclude Include="Game\Level.h" />
     <ClInclude Include="Game\Unit.h" />

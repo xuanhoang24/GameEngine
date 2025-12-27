@@ -26,6 +26,8 @@ public:
     // Spawn point
     bool GetPlayerSpawnPoint(float& outX, float& outY) const;
     const vector<pair<float, float>>& GetCoinSpawnPoints() const;
+    const vector<pair<float, float>>& GetEnemySpawnPoints() const;
+    bool GetEnemyZoneBoundaries(float spawnX, float spawnY, float& outLeftX, float& outRightX) const;
     
     // Getters
     int GetMapPixelWidth() const;

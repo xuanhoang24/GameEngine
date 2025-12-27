@@ -28,6 +28,8 @@ bool TileMap::Load(const string& _path)
     LoadCollisionObjects();
     LoadSpawnPoint();
     LoadCoinSpawnPoints();
+    LoadEnemySpawnPoints();
+    LoadEnemyZones();
 
     return true;
 }
@@ -351,6 +353,110 @@ void TileMap::LoadCoinSpawnPoints()
             break;
         }
     }
+}
+
+void TileMap::LoadEnemySpawnPoints()
+{
+    m_enemySpawnPoints.clear();
+
+    const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
+
+    for (size_t i = 0; i < layers.size(); ++i)
+    {
+        if (layers[i]->getType() != tmx::Layer::Type::Group)
+            continue;
+
+        const tmx::LayerGroup& group = layers[i]->getLayerAs<tmx::LayerGroup>();
+        const std::vector<std::unique_ptr<tmx::Layer>>& subLayers = group.getLayers();
+
+        for (size_t j = 0; j < subLayers.size(); ++j)
+        {
+            if (subLayers[j]->getType() != tmx::Layer::Type::Object)
+                continue;
+
+            if (subLayers[j]->getName() != "enemySpawn")
+                continue;
+
+            const tmx::ObjectGroup& objLayer = subLayers[j]->getLayerAs<tmx::ObjectGroup>();
+            const std::vector<tmx::Object>& objects = objLayer.getObjects();
+
+            for (size_t k = 0; k < objects.size(); ++k)
+            {
+                const tmx::Object& enemyObj = objects[k];
+                float x = enemyObj.getPosition().x;
+                float y = enemyObj.getPosition().y;
+                m_enemySpawnPoints.push_back(std::make_pair(x, y));
+            }
+            break;
+        }
+    }
+}
+
+void TileMap::LoadEnemyZones()
+{
+    m_enemyZonePoints.clear();
+
+    const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
+
+    for (size_t i = 0; i < layers.size(); ++i)
+    {
+        if (layers[i]->getType() != tmx::Layer::Type::Object)
+            continue;
+
+        if (layers[i]->getName() != "enemyZones")
+            continue;
+
+        const tmx::ObjectGroup& objLayer = layers[i]->getLayerAs<tmx::ObjectGroup>();
+        const std::vector<tmx::Object>& objects = objLayer.getObjects();
+
+        for (size_t j = 0; j < objects.size(); ++j)
+        {
+            const tmx::Object& zoneObj = objects[j];
+            float x = zoneObj.getPosition().x;
+            float y = zoneObj.getPosition().y;
+            m_enemyZonePoints.push_back(std::make_pair(x, y));
+        }
+        break;
+    }
+}
+
+bool TileMap::GetEnemyZoneBoundaries(float spawnX, float spawnY, float& outLeftX, float& outRightX) const
+{
+    // Find the closest Enemy_Left and Enemy_Right points to this spawn point
+    float closestLeftX = spawnX - 100.0f; // Default fallback
+    float closestRightX = spawnX + 100.0f; // Default fallback
+    float closestLeftDist = 999999.0f;
+    float closestRightDist = 999999.0f;
+    
+    // Search through all zone points
+    for (const auto& point : m_enemyZonePoints)
+    {
+        float zoneX = point.first;
+        float zoneY = point.second;
+        
+        // Calculate distance from spawn point
+        float dx = zoneX - spawnX;
+        float dy = zoneY - spawnY;
+        float dist = sqrt(dx * dx + dy * dy);
+        
+        // If this point is to the left of spawn
+        if (zoneX < spawnX && dist < closestLeftDist)
+        {
+            closestLeftX = zoneX;
+            closestLeftDist = dist;
+        }
+        // If this point is to the right of spawn
+        else if (zoneX > spawnX && dist < closestRightDist)
+        {
+            closestRightX = zoneX;
+            closestRightDist = dist;
+        }
+    }
+    
+    outLeftX = closestLeftX;
+    outRightX = closestRightX;
+    
+    return true;
 }
 
 // Check collision from top (player standing on box)

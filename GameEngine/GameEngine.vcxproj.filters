@@ -244,6 +244,9 @@
     <ClCompile Include="Game\Coin.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Enemy.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
     <ClCompile Include="Game\GameMap.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -259,6 +262,9 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\Coin.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Enemy.h">
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\GameMap.h">

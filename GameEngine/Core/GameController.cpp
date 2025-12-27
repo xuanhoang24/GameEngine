@@ -4,6 +4,7 @@
 #include "../Input/InputController.h"
 #include "../Game/Player.h"
 #include "../Game/Coin.h"
+#include "../Game/Enemy.h"
 #include "../Graphics/SpriteAnim.h"
 #include "../Graphics/SpriteSheet.h"
 #include "../Graphics/Texture.h"
@@ -21,6 +22,7 @@ GameController::GameController()
     m_camera = nullptr;
     m_quit = false;
     m_coins.clear();
+    m_enemies.clear();
 }
 
 GameController::~GameController()
@@ -64,6 +66,9 @@ void GameController::Initialize()
     
     // Spawn coins from map
     m_coins = Coin::SpawnCoinsFromMap(g_Map);
+    
+    // Spawn enemies from map
+    m_enemies = Enemy::SpawnEnemiesFromMap(g_Map);
 }
 
 void GameController::ShutDown()
@@ -80,6 +85,13 @@ void GameController::ShutDown()
         delete coin;
     }
     m_coins.clear();
+    
+    // Clean up enemies
+    for (Enemy* enemy : m_enemies)
+    {
+        delete enemy;
+    }
+    m_enemies.clear();
 
     delete SpriteAnim::Pool;
     SpriteAnim::Pool = nullptr;
@@ -125,10 +137,22 @@ void GameController::RunGame()
             coin->Update(t->GetDeltaTime());
         }
         
+        // Update enemies
+        for (Enemy* enemy : m_enemies)
+        {
+            enemy->Update(t->GetDeltaTime());
+        }
+        
         // Update camera to follow player
         m_camera->FollowPlayer(m_player, m_renderer);
         
         g_Map->Render(m_renderer, m_camera);
+        
+        // Render enemies
+        for (Enemy* enemy : m_enemies)
+        {
+            enemy->Render(m_renderer, m_camera);
+        }
         
         // Render coins
         for (Coin* coin : m_coins)

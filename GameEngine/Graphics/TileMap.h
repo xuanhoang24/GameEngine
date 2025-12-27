@@ -31,6 +31,10 @@ public:
     // Spawn point
     bool GetPlayerSpawnPoint(float& outX, float& outY) const;
     const std::vector<std::pair<float, float>>& GetCoinSpawnPoints() const { return m_coinSpawnPoints; }
+    const std::vector<std::pair<float, float>>& GetEnemySpawnPoints() const { return m_enemySpawnPoints; }
+    
+    // Get enemy zone boundaries (returns left and right X positions for a given spawn point)
+    bool GetEnemyZoneBoundaries(float spawnX, float spawnY, float& outLeftX, float& outRightX) const;
     
     // Getters
     int GetMapWidth() const { return m_mapWidth; }
@@ -73,6 +77,8 @@ private:
     void LoadCollisionObjects();
     void LoadSpawnPoint();
     void LoadCoinSpawnPoints();
+    void LoadEnemySpawnPoints();
+    void LoadEnemyZones();
     TilesetInfo* FindTileset(int gid);
 
     // Members
@@ -88,6 +94,10 @@ private:
     float m_spawnY = 0.0f;
     bool m_hasSpawnPoint = false;
     std::vector<std::pair<float, float>> m_coinSpawnPoints;
+    std::vector<std::pair<float, float>> m_enemySpawnPoints;
+    
+    // Enemy zones (left and right boundaries)
+    std::vector<std::pair<float, float>> m_enemyZonePoints; // All Enemy_Left and Enemy_Right points
 
     // Map info
     int m_mapWidth = 0;

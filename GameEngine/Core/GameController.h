@@ -15,6 +15,7 @@ class Player;
 class GameMap;
 class Camera;
 class Coin;
+class Enemy;
 class GameController : public Singleton<GameController>
 {
 public:
@@ -37,6 +38,7 @@ private:
     GameMap* g_Map;
     Camera* m_camera;
     vector<Coin*> m_coins;
+    vector<Enemy*> m_enemies;
 
     bool m_quit;
 };

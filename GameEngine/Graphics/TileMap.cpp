@@ -337,7 +337,7 @@ void TileMap::LoadCoinSpawnPoints()
             if (subLayers[j]->getType() != tmx::Layer::Type::Object)
                 continue;
 
-            if (subLayers[j]->getName() != "CoinSpawner")
+            if (subLayers[j]->getName() != "CoinSpawn")
                 continue;
 
             const tmx::ObjectGroup& objLayer = subLayers[j]->getLayerAs<tmx::ObjectGroup>();
@@ -374,7 +374,7 @@ void TileMap::LoadEnemySpawnPoints()
             if (subLayers[j]->getType() != tmx::Layer::Type::Object)
                 continue;
 
-            if (subLayers[j]->getName() != "EnemySpawner")
+            if (subLayers[j]->getName() != "EnemySpawn")
                 continue;
 
             const tmx::ObjectGroup& objLayer = subLayers[j]->getLayerAs<tmx::ObjectGroup>();

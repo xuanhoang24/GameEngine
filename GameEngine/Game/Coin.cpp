@@ -2,6 +2,23 @@
 #include "../Game/GameMap.h"
 #include "../Graphics/Camera.h"
 #include "../Core/Timing.h"
+#include <random>
+
+static CoinTextureInfo GetRandomCoinTexture()
+{
+	static random_device rd;
+	static mt19937 gen(rd());
+	static uniform_int_distribution<> dist(0, 2);
+	
+	int coinType = dist(gen);
+	switch (coinType)
+	{
+		case 0: return { "../Assets/Textures/Obstacles/coin1.png", 10 };
+		case 1: return { "../Assets/Textures/Obstacles/coin2.png", 10 };
+		case 2: return { "../Assets/Textures/Obstacles/diamond.png", 5 };
+		default: return { "../Assets/Textures/Obstacles/coin1.png", 10 };
+	}
+}
 
 Coin::Coin()
 {
@@ -37,7 +54,8 @@ void Coin::Initialize(float x, float y)
 	m_currentMapInstance = 0;
 	
 	m_animLoader = new AnimatedSpriteLoader();
-	m_animLoader->LoadAnimation("idle", "../Assets/Textures/Obstacles/coin2.png", 1, 10, 16, 16, 10, 10.0f);
+	CoinTextureInfo texInfo = GetRandomCoinTexture();
+	m_animLoader->LoadAnimation("idle", texInfo.path, 1, texInfo.frameCount, 16, 16, texInfo.frameCount, 10.0f);
 }
 
 void Coin::Update(float _deltaTime, float _cameraX, int _screenWidth, int _mapPixelWidth)
@@ -69,6 +87,15 @@ void Coin::RepositionAhead(float _cameraX, int _screenWidth, int _mapPixelWidth)
 	float mapOffset = m_currentMapInstance * _mapPixelWidth;
 	m_worldX = m_baseX + mapOffset;
 	m_worldY = m_baseY;
+	
+	// Randomize coin texture on respawn
+	if (m_animLoader)
+	{
+		delete m_animLoader;
+		m_animLoader = new AnimatedSpriteLoader();
+		CoinTextureInfo texInfo = GetRandomCoinTexture();
+		m_animLoader->LoadAnimation("idle", texInfo.path, 1, texInfo.frameCount, 16, 16, texInfo.frameCount, 10.0f);
+	}
 	
 	// Reactivate coin
 	m_isActive = true;

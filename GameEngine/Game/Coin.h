@@ -8,6 +8,12 @@
 class Camera;
 class GameMap;
 
+struct CoinTextureInfo
+{
+	string path;
+	int frameCount;
+};
+
 class Coin
 {
 public:

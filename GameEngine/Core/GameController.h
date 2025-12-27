@@ -6,6 +6,7 @@
 
 class Renderer;
 class TTFont;
+class TTFont;
 class InputController;
 class AudioController;
 class SoundEffect;
@@ -43,8 +44,10 @@ private:
     Player* m_player;
     GameMap* g_Map;
     Camera* m_camera;
+    TTFont* m_font;
     vector<Coin*> m_coins;
     vector<Enemy*> m_enemies;
+    int m_score;
 
     bool m_quit;
 };

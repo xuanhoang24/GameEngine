@@ -1,6 +1,7 @@
 #include "../Core/GameController.h"
 #include "../Graphics/Renderer.h"
 #include "../Graphics/Camera.h"
+#include "../Graphics/TTFont.h"
 #include "../Input/InputController.h"
 #include "../Game/Player.h"
 #include "../Game/Coin.h"
@@ -12,6 +13,7 @@
 #include "../Input/Keyboard.h"
 #include "../Core/Timing.h"
 #include "../Game/GameMap.h"
+#include <sstream>
 
 GameController::GameController()
 {
@@ -20,7 +22,9 @@ GameController::GameController()
     m_input = nullptr;
     m_player = nullptr;
     m_camera = nullptr;
+    m_font = nullptr;
     m_quit = false;
+    m_score = 0;
     m_coins.clear();
     m_enemies.clear();
 }
@@ -69,10 +73,18 @@ void GameController::Initialize()
     
     // Spawn enemies from map
     m_enemies = Enemy::SpawnEnemiesFromMap(g_Map);
+    
+    // Initialize font for score display
+    m_font = new TTFont();
+    m_font->Initialize(24);
+    m_score = 0;
 }
 
 void GameController::ShutDown()
 {
+    delete m_font;
+    m_font = nullptr;
+    
     delete m_player;
     m_player = nullptr;
 
@@ -184,6 +196,13 @@ void GameController::RunGame()
         m_player->Render(m_renderer, m_camera);
         m_player->RenderCollisionBox(m_renderer, m_camera);
         g_Map->RenderCollisionBoxes(m_renderer, m_camera);
+        
+        // Render score UI
+        std::stringstream ss;
+        ss << "Score: " << m_score;
+        SDL_Color white = { 255, 255, 255, 255 };
+        SDL_Point scorePos = { 10, 10 };
+        m_font->Write(m_renderer->GetRenderer(), ss.str().c_str(), white, scorePos);
 
         t->CapFPS();
         SDL_RenderPresent(m_renderer->GetRenderer());
@@ -219,6 +238,7 @@ void GameController::CheckPlayerCoinCollisions()
         if (CheckAABBCollision(playerX, playerY, playerW, playerH,
                               coinX, coinY, coinW, coinH))
         {
+            m_score += coin->GetPointValue();
             coin->Collect();
         }
     }

@@ -13,10 +13,10 @@ static CoinTextureInfo GetRandomCoinTexture()
 	int coinType = dist(gen);
 	switch (coinType)
 	{
-		case 0: return { "../Assets/Textures/Obstacles/coin1.png", 10 };
-		case 1: return { "../Assets/Textures/Obstacles/coin2.png", 10 };
-		case 2: return { "../Assets/Textures/Obstacles/diamond.png", 5 };
-		default: return { "../Assets/Textures/Obstacles/coin1.png", 10 };
+		case 0: return { "../Assets/Textures/Obstacles/coin1.png", 10, CoinType::Coin1, 10 };
+		case 1: return { "../Assets/Textures/Obstacles/coin2.png", 10, CoinType::Coin2, 5 };
+		case 2: return { "../Assets/Textures/Obstacles/diamond.png", 5, CoinType::Diamond, 15 };
+		default: return { "../Assets/Textures/Obstacles/coin1.png", 10, CoinType::Coin1, 10 };
 	}
 }
 
@@ -29,6 +29,8 @@ Coin::Coin()
 	m_baseY = 0.0f;
 	m_isActive = true;
 	m_currentMapInstance = 0;
+	m_coinType = CoinType::Coin1;
+	m_pointValue = 10;
 }
 
 Coin::~Coin()
@@ -55,6 +57,8 @@ void Coin::Initialize(float x, float y)
 	
 	m_animLoader = new AnimatedSpriteLoader();
 	CoinTextureInfo texInfo = GetRandomCoinTexture();
+	m_coinType = texInfo.type;
+	m_pointValue = texInfo.pointValue;
 	m_animLoader->LoadAnimation("idle", texInfo.path, 1, texInfo.frameCount, 16, 16, texInfo.frameCount, 10.0f);
 }
 
@@ -94,6 +98,8 @@ void Coin::RepositionAhead(float _cameraX, int _screenWidth, int _mapPixelWidth)
 		delete m_animLoader;
 		m_animLoader = new AnimatedSpriteLoader();
 		CoinTextureInfo texInfo = GetRandomCoinTexture();
+		m_coinType = texInfo.type;
+		m_pointValue = texInfo.pointValue;
 		m_animLoader->LoadAnimation("idle", texInfo.path, 1, texInfo.frameCount, 16, 16, texInfo.frameCount, 10.0f);
 	}
 	

@@ -6,8 +6,6 @@
 
 ChunkMap::ChunkMap()
     : m_startChunk(nullptr)
-    , m_randomChunk(nullptr)
-    , m_gapChunk(nullptr)
     , m_nextChunkX(0.0f)
     , m_chunkWidth(0)
     , m_rng(std::random_device{}())
@@ -25,28 +23,26 @@ ChunkMap::~ChunkMap()
     }
     
     delete m_startChunk;
-    delete m_randomChunk;
-    delete m_gapChunk;
+    
+    for (auto* chunk : m_randomChunks)
+        delete chunk;
+    m_randomChunks.clear();
+    
+    for (auto* chunk : m_gapChunks)
+        delete chunk;
+    m_gapChunks.clear();
+    
+    for (auto* chunk : m_floatingChunks)
+        delete chunk;
+    m_floatingChunks.clear();
+    
     m_activeChunks.clear();
 }
 
-bool ChunkMap::Load(const string& _startChunkPath, const string& _randomChunkPath, const string& _gapChunkPath)
+bool ChunkMap::Load(const string& _startChunkPath)
 {
-    m_startChunkPath = _startChunkPath;
-    m_randomChunkPath = _randomChunkPath;
-    m_gapChunkPath = _gapChunkPath;
-    
-    // Load template chunks
     m_startChunk = new TileMap();
     if (!m_startChunk->Load(_startChunkPath))
-        return false;
-    
-    m_randomChunk = new TileMap();
-    if (!m_randomChunk->Load(_randomChunkPath))
-        return false;
-    
-    m_gapChunk = new TileMap();
-    if (!m_gapChunk->Load(_gapChunkPath))
         return false;
     
     // Get chunk width from start chunk
@@ -62,6 +58,53 @@ bool ChunkMap::Load(const string& _startChunkPath, const string& _randomChunkPat
     m_nextChunkX = (float)m_chunkWidth;
     
     return true;
+}
+
+void ChunkMap::AddRandomChunk(const string& _path)
+{
+    TileMap* chunk = new TileMap();
+    if (chunk->Load(_path))
+        m_randomChunks.push_back(chunk);
+    else
+        delete chunk;
+}
+
+void ChunkMap::AddGapChunk(const string& _path)
+{
+    TileMap* chunk = new TileMap();
+    if (chunk->Load(_path))
+        m_gapChunks.push_back(chunk);
+    else
+        delete chunk;
+}
+
+void ChunkMap::AddFloatingChunk(const string& _path)
+{
+    TileMap* chunk = new TileMap();
+    if (chunk->Load(_path))
+        m_floatingChunks.push_back(chunk);
+    else
+        delete chunk;
+}
+
+void ChunkMap::LoadDefaultChunks()
+{
+    // Load start chunk
+    Load("../Assets/Maps/Chunk/chunk_flat_start.tmx");
+    
+    // Add random chunks
+    AddRandomChunk("../Assets/Maps/Chunk/chunk_random_01.tmx");
+    AddRandomChunk("../Assets/Maps/Chunk/chunk_random_11.tmx");
+    AddRandomChunk("../Assets/Maps/Chunk/chunk_random_21.tmx");
+    
+    // Add gap chunks
+    AddGapChunk("../Assets/Maps/Chunk/chunk_gap_01.tmx");
+    
+    // Add floating chunks
+    AddFloatingChunk("../Assets/Maps/Chunk/chunk_floating_01.tmx");
+    AddFloatingChunk("../Assets/Maps/Chunk/chunk_floating_02.tmx");
+    AddFloatingChunk("../Assets/Maps/Chunk/chunk_floating_11.tmx");
+    AddFloatingChunk("../Assets/Maps/Chunk/chunk_floating_12.tmx");
 }
 
 void ChunkMap::Update(float _cameraX, float _screenWidth)
@@ -117,25 +160,55 @@ void ChunkMap::SpawnNextChunk()
     ChunkInstance newChunk;
     newChunk.worldOffsetX = m_nextChunkX;
     newChunk.chunkType = SelectRandomChunkType();
+    newChunk.tileMap = SelectRandomChunkVariant(newChunk.chunkType);
     
-    // Point to the appropriate template
-    if (newChunk.chunkType == 1)
-        newChunk.tileMap = m_randomChunk;
-    else
-        newChunk.tileMap = m_gapChunk;
+    if (newChunk.tileMap)
+    {
+        // Spawn entities based on spawn zones
+        SpawnEntitiesForChunk(newChunk);
+        m_activeChunks.push_back(newChunk);
+    }
     
-    // Spawn entities based on spawn zones
-    SpawnEntitiesForChunk(newChunk);
-    
-    m_activeChunks.push_back(newChunk);
     m_nextChunkX += m_chunkWidth;
 }
 
 int ChunkMap::SelectRandomChunkType()
 {
     int roll = m_dist(m_rng);
-    // 70% chance for random chunk (type 1), 30% for gap chunk (type 2)
-    return (roll <= 70) ? 1 : 2;
+    // 30% random, 30% gap, 30% floating, 10% fallback to random
+    if (roll <= 30)
+        return 1; // random
+    else if (roll <= 60)
+        return 2; // gap
+    else if (roll <= 90)
+        return 3; // floating
+    else
+        return 1; // fallback to random
+}
+
+TileMap* ChunkMap::SelectRandomChunkVariant(int _type)
+{
+    vector<TileMap*>* chunks = nullptr;
+    
+    switch (_type)
+    {
+        case 1: chunks = &m_randomChunks; break;
+        case 2: chunks = &m_gapChunks; break;
+        case 3: chunks = &m_floatingChunks; break;
+        default: return nullptr;
+    }
+    
+    if (chunks->empty())
+    {
+        // Fallback to random chunks if requested type is empty
+        if (!m_randomChunks.empty())
+            chunks = &m_randomChunks;
+        else
+            return nullptr;
+    }
+    
+    std::uniform_int_distribution<size_t> dist(0, chunks->size() - 1);
+    return (*chunks)[dist(m_rng)];
 }
 
 void ChunkMap::SpawnEntitiesForChunk(ChunkInstance& _chunk)

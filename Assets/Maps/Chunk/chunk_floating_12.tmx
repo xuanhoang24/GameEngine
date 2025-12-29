@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="8">
+ <tileset firstgid="1" name="grass-tilemap-1" tilewidth="16" tileheight="16" tilecount="91" columns="13">
+  <image source="../Images/grass-tilemap-1.png" width="208" height="112"/>
+ </tileset>
+ <tileset firstgid="92" name="flowersAndGrass" tilewidth="16" tileheight="16" tilecount="5" columns="5">
+  <image source="../Images/flowersAndGrass.png" width="80" height="16"/>
+ </tileset>
+ <tileset firstgid="97" name="grass-tilemap-2" tilewidth="16" tileheight="16" tilecount="91" columns="13">
+  <image source="../Images/grass-tilemap-2.png" width="208" height="112"/>
+ </tileset>
+ <objectgroup id="3" name="Collision">
+  <object id="7" x="64" y="48" width="112" height="64"/>
+ </objectgroup>
+ <objectgroup id="4" name="Meta">
+  <object id="2" name="Start" x="0" y="96">
+   <properties>
+    <property name="Type" value="Start"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="3" name="End" x="240" y="96">
+   <properties>
+    <property name="Type" value="End"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="5" name="Gameplay"/>
+ <layer id="1" name="Ground" width="15" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBj6IBGIk7DgZCL08gExPxYsQIReaSCWwYJlidCrAcSaWLAWEXqHAgAAYtoE+w==
+  </data>
+ </layer>
+ <layer id="2" name="Decoration" width="15" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgcIBaI45DoeCBOgPJHwdADAIxEApM=
+  </data>
+ </layer>
+</map>

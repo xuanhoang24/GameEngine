@@ -55,11 +55,7 @@ void GameController::Initialize()
 
     // Chunk Map - load chunk-based infinite map
     m_chunkMap = new ChunkMap();
-    m_chunkMap->Load(
-        "../Assets/Maps/Chunk/chunk_flat_start.tmx",
-        "../Assets/Maps/Chunk/chunk_random_01.tmx",
-        "../Assets/Maps/Chunk/chunk_gap_01.tmx"
-    );
+    m_chunkMap->LoadDefaultChunks();
     
     // Set logical size based on map height (zooms camera to fit map)
     int mapHeight = m_chunkMap->GetMapPixelHeight();

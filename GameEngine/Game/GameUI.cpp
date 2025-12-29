@@ -166,6 +166,13 @@ void GameUI::RenderPlayingUI(Renderer* _renderer, int _score, Player* _player)
     SDL_Point scorePos = { 10, 10 };
     m_font->Write(_renderer->GetRenderer(), ss.str().c_str(), black, scorePos);
     
+    // Render FPS in top right corner
+    std::stringstream fpsStream;
+    fpsStream << "FPS: " << Timing::Instance().GetFPS();
+    Point logicalSize = _renderer->GetLogicalSize();
+    SDL_Point fpsPos = { logicalSize.X - 45, 10 };
+    m_font->Write(_renderer->GetRenderer(), 8, fpsStream.str().c_str(), black, fpsPos);
+    
     // Render hearts
     if (_player)
     {

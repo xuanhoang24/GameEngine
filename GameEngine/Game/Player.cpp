@@ -352,6 +352,7 @@ void Player::Die()
 		m_deathTimer = 0.0f;
 		m_veloX = 0.0f;
 		m_veloY = 0.0f;
+		m_health = 0;
 	}
 }
 

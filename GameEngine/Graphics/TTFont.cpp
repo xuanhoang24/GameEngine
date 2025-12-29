@@ -41,6 +41,27 @@ void TTFont::Write(SDL_Renderer* _renderer, const char* _text, SDL_Color _color,
 	SDL_DestroyTexture(texture);
 }
 
+void TTFont::Write(SDL_Renderer* _renderer, int _fontSize, const char* _text, SDL_Color _color, SDL_Point _pos, int* _outWidth, int* _outHeight)
+{
+	if (strlen(_text) == 0) return;
+
+	TTF_Font* tempFont = TTF_OpenFont("../Assets/Fonts/arial.ttf", _fontSize);
+	if (!tempFont) return;
+
+	SDL_Surface* surface = TTF_RenderUTF8_Blended(tempFont, _text, _color);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
+
+	SDL_Rect destRect{ _pos.x, _pos.y, surface->w, surface->h };
+	SDL_RenderCopyEx(_renderer, texture, nullptr, &destRect, 0, nullptr, SDL_FLIP_NONE);
+
+	if (_outWidth) *_outWidth = surface->w;
+	if (_outHeight) *_outHeight = surface->h;
+
+	SDL_FreeSurface(surface);
+	SDL_DestroyTexture(texture);
+	TTF_CloseFont(tempFont);
+}
+
 void TTFont::GetTextSize(const char* _text, int* _width, int* _height)
 {
 	if (m_font && strlen(_text) > 0)

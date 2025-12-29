@@ -1,5 +1,5 @@
 #include "../Game/Player.h"
-#include "../Game/GameMap.h"
+#include "../Game/ChunkMap.h"
 #include "../Resources/FileController.h"
 #include "../Core/Timing.h"
 #include "../Input/InputController.h"
@@ -22,7 +22,7 @@ Player::Player()
 
 	m_gravity = 980.0f;
 	m_isGrounded = false;
-	m_gameMap = nullptr;
+	m_chunkMap = nullptr;
 
 	m_jumpPressed = false;
 	m_isJumping = false;
@@ -99,7 +99,7 @@ void Player::Update(float _deltaTime)
 	}
 
 	// Collision detection
-	if (!m_gameMap)
+	if (!m_chunkMap)
 	{
 		const float FALLBACK_GROUND = 500.0f;
 		if (m_position.Y + GetHeight() >= FALLBACK_GROUND)
@@ -121,7 +121,7 @@ void Player::Update(float _deltaTime)
 		if (m_veloX > 0)
 		{
 			float wallX;
-			if (m_gameMap->CheckCollisionLeft(collisionX, collisionY, collisionWidth, collisionHeight, wallX))
+			if (m_chunkMap->CheckCollisionLeft(collisionX, collisionY, collisionWidth, collisionHeight, wallX))
 			{
 				float offsetX = (GetWidth() - collisionWidth) * 0.5f;
 				m_worldX = wallX - collisionWidth - offsetX;
@@ -131,7 +131,7 @@ void Player::Update(float _deltaTime)
 		else if (m_veloX < 0)
 		{
 			float wallX;
-			if (m_gameMap->CheckCollisionRight(collisionX, collisionY, collisionWidth, collisionHeight, wallX))
+			if (m_chunkMap->CheckCollisionRight(collisionX, collisionY, collisionWidth, collisionHeight, wallX))
 			{
 				float offsetX = (GetWidth() - collisionWidth) * 0.5f;
 				m_worldX = wallX - offsetX;
@@ -146,7 +146,7 @@ void Player::Update(float _deltaTime)
 		if (m_veloY >= 0)
 		{
 			float groundY;
-			if (m_gameMap->CheckCollisionTop(collisionX, collisionY, collisionWidth, collisionHeight, groundY))
+			if (m_chunkMap->CheckCollisionTop(collisionX, collisionY, collisionWidth, collisionHeight, groundY))
 			{
 				float offsetY = GetHeight() - collisionHeight;
 				float distanceToGround = groundY - (collisionY + collisionHeight);
@@ -174,7 +174,7 @@ void Player::Update(float _deltaTime)
 		else if (m_veloY < 0)
 		{
 			float ceilingY;
-			if (m_gameMap->CheckCollisionBottom(collisionX, collisionY, collisionWidth, collisionHeight, ceilingY))
+			if (m_chunkMap->CheckCollisionBottom(collisionX, collisionY, collisionWidth, collisionHeight, ceilingY))
 			{
 				float offsetY = GetHeight() - collisionHeight;
 				m_position.Y = (unsigned int)(ceilingY - offsetY);

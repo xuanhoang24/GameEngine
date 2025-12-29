@@ -5,7 +5,7 @@
 #include "../Graphics/Renderer.h"
 #include "../Graphics/AnimatedSpriteLoader.h"
 
-class GameMap;
+class ChunkMap;
 class Camera;
 
 class Player
@@ -19,7 +19,7 @@ public:
 	void Render(Renderer* _renderer, Camera* _camera);
 	void RenderCollisionBox(Renderer* _renderer, Camera* _camera);
 	void HandleInput(SDL_Event _event);
-	void SetGameMap(GameMap* _map) { m_gameMap = _map; }
+	void SetChunkMap(ChunkMap* _map) { m_chunkMap = _map; }
 	void SetSpawnPosition(float x, float y);
 	
 	float GetWidth() const { return 16 * scale; }
@@ -57,7 +57,7 @@ private:
 	// Physics
 	float m_gravity;
 	bool m_isGrounded;
-	GameMap* m_gameMap;
+	ChunkMap* m_chunkMap;
 
 	// Jump
 	bool m_jumpPressed;

@@ -24,6 +24,7 @@ public:
     void ChangeDisplayMode(SDL_DisplayMode* _mode);
     void EnumerateDisplayModes();
     Point GetWindowSize();
+    Point GetLogicalSize();
     void SetDrawColor(Color _color);
     void ClearScreen();
     void SetViewport(Rect _viewport);

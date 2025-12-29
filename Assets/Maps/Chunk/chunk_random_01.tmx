@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="4">
+ <tileset firstgid="1" name="grass-tilemap-1" tilewidth="16" tileheight="16" tilecount="91" columns="13">
+  <image source="../Images/grass-tilemap-1.png" width="208" height="112"/>
+ </tileset>
+ <tileset firstgid="92" name="flowersAndGrass" tilewidth="16" tileheight="16" tilecount="5" columns="5">
+  <image source="../Images/flowersAndGrass.png" width="80" height="16"/>
+ </tileset>
+ <objectgroup id="3" name="Collision">
+  <object id="1" x="0" y="48" width="240" height="112"/>
+ </objectgroup>
+ <objectgroup id="4" name="Meta">
+  <object id="2" name="Start" x="0" y="48">
+   <properties>
+    <property name="Type" value="Start"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="3" name="End" x="240" y="48">
+   <properties>
+    <property name="Type" value="End"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="5" name="Gameplay">
+  <object id="10" name="enemy_spawn_zone" x="64" y="32" width="107" height="16">
+   <properties>
+    <property name="chance" type="float" value="0.7"/>
+    <property name="enemyTypes" value="ghost,mushroom"/>
+    <property name="enemyWeights" value="0.3,0.7"/>
+    <property name="maxCount" type="int" value="1"/>
+    <property name="spawnType" value="enemy"/>
+   </properties>
+  </object>
+  <object id="11" name="coin_spawn_zone" x="32.6667" y="16" width="167.333" height="32">
+   <properties>
+    <property name="chance" type="float" value="0.8"/>
+    <property name="maxCount" type="int" value="3"/>
+    <property name="minCount" type="int" value="1"/>
+    <property name="spawnType" value="coin"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer id="1" name="Ground" width="15" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBh6gBGImcjAzEDMB8T8ZGABIJYGYhkysOwQ1asBxJpkYC0gBgBKJgn3
+  </data>
+ </layer>
+ <layer id="2" name="Decoration" width="15" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgYEAPEsUAcB8QJSGwYHY8mjswfBYMfAAC9uwWE
+  </data>
+ </layer>
+</map>

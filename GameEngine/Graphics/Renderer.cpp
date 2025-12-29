@@ -161,6 +161,17 @@ Point Renderer::GetWindowSize()
     return Point(w, h);
 }
 
+Point Renderer::GetLogicalSize()
+{
+    int w;
+    int h;
+    SDL_RenderGetLogicalSize(m_renderer, &w, &h);
+    // If no logical size set, return window size
+    if (w == 0 || h == 0)
+        return GetWindowSize();
+    return Point(w, h);
+}
+
 void Renderer::SetViewport(Rect _viewport)
 {
     m_viewPort.x = _viewport.X1;

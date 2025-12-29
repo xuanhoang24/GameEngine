@@ -34,9 +34,10 @@ void Camera::FollowPlayer(Player* _player, Renderer* _renderer)
 	float playerWorldX = _player->GetWorldX();
 	float playerWidth = _player->GetWidth();
 	
-	// Logical size (30 tiles ≈ 483 pixels wide , 17 tiles heigh * 16 pixels = 272)
-	int logicalWidth = 483;
-	int logicalHeight = 272;
+	// Get logical size from renderer (matches screen)
+	Point logicalSize = _renderer->GetLogicalSize();
+	int logicalWidth = logicalSize.X;
+	int logicalHeight = logicalSize.Y;
 
 	// Center camera on player horizontally
 	float targetX = playerWorldX + playerWidth * 0.5f - logicalWidth * 0.5f;

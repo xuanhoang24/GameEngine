@@ -30,11 +30,7 @@ public:
     
     // Spawn point
     bool GetPlayerSpawnPoint(float& outX, float& outY) const;
-    const std::vector<std::pair<float, float>>& GetCoinSpawnPoints() const { return m_coinSpawnPoints; }
-    const std::vector<std::pair<float, float>>& GetEnemySpawnPoints() const { return m_enemySpawnPoints; }
-    
-    // Get enemy zone boundaries (returns left and right X positions for a given spawn point)
-    bool GetEnemyZoneBoundaries(float spawnX, float spawnY, float& outLeftX, float& outRightX) const;
+    bool GetEndPoint(float& outX, float& outY) const;
     
     // Getters
     int GetMapWidth() const { return m_mapWidth; }
@@ -44,7 +40,7 @@ public:
     int GetMapPixelWidth() const { return m_mapWidth * m_tileWidth; }
     int GetMapPixelHeight() const { return m_mapHeight * m_tileHeight; }
 
-private:
+public:
     struct TilesetInfo
     {
         SDL_Texture* texture = nullptr;
@@ -69,6 +65,15 @@ private:
     {
         const tmx::TileLayer* layer = nullptr;
     };
+    
+    // Public accessors for ChunkMap
+    const vector<TilesetInfo>& GetTilesets() const { return m_tilesets; }
+    const vector<LayerInfo>& GetLayers() const { return m_layers; }
+    const vector<ImageLayerInfo>& GetImageLayers() const { return m_imageLayers; }
+    const vector<CollisionShape>& GetCollisionShapes() const { return m_collisionShapes; }
+    TilesetInfo* FindTilesetPublic(int gid) { return FindTileset(gid); }
+
+private:
 
     // Methods
     void LoadTilesets();
@@ -76,9 +81,6 @@ private:
     void LoadImageLayers();
     void LoadCollisionObjects();
     void LoadSpawnPoint();
-    void LoadCoinSpawnPoints();
-    void LoadEnemySpawnPoints();
-    void LoadEnemyZones();
     TilesetInfo* FindTileset(int gid);
 
     // Members
@@ -90,14 +92,14 @@ private:
     std::vector<ImageLayerInfo> m_imageLayers;
 
     // Spawn point
-    float m_spawnX = 0.0f;
-    float m_spawnY = 0.0f;
-    bool m_hasSpawnPoint = false;
-    std::vector<std::pair<float, float>> m_coinSpawnPoints;
-    std::vector<std::pair<float, float>> m_enemySpawnPoints;
+    float m_startX = 0.0f;
+    float m_startY = 0.0f;
+    bool m_hasStartPoint = false;
     
-    // Enemy zones (left and right boundaries)
-    std::vector<std::pair<float, float>> m_enemyZonePoints; // All Enemy_Left and Enemy_Right points
+    // End point (for chunk connections)
+    float m_endX = 0.0f;
+    float m_endY = 0.0f;
+    bool m_hasEndPoint = false;
 
     // Map info
     int m_mapWidth = 0;

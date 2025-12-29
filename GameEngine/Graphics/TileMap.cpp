@@ -27,9 +27,6 @@ bool TileMap::Load(const string& _path)
     LoadLayers();
     LoadCollisionObjects();
     LoadSpawnPoint();
-    LoadCoinSpawnPoints();
-    LoadEnemySpawnPoints();
-    LoadEnemyZones();
 
     return true;
 }
@@ -98,7 +95,7 @@ void TileMap::Render(Renderer* _renderer, Camera* _camera)
     int mapPixelWidth = GetMapPixelWidth();
     
     // Get screen width to determine how many map copies to render
-    Point screenSize = _renderer->GetWindowSize();
+    Point screenSize = _renderer->GetLogicalSize();
     int screenWidth = screenSize.X;
     
     float cameraX = _camera ? _camera->GetX() : 0.0f;
@@ -269,204 +266,63 @@ void TileMap::LoadImageLayers()
 
 void TileMap::LoadSpawnPoint()
 {
-    m_hasSpawnPoint = false;
+    m_hasStartPoint = false;
+    m_hasEndPoint = false;
 
     const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
-
+    
+    // Look for "Start" and "End" points in "Meta" object group (chunk maps)
     for (size_t i = 0; i < layers.size(); ++i)
     {
-        if (layers[i]->getType() != tmx::Layer::Type::Group)
+        if (layers[i]->getType() != tmx::Layer::Type::Object)
             continue;
 
-        const tmx::LayerGroup& group = layers[i]->getLayerAs<tmx::LayerGroup>();
-        const std::vector<std::unique_ptr<tmx::Layer>>& subLayers = group.getLayers();
+        if (layers[i]->getName() != "Meta")
+            continue;
 
-        for (size_t j = 0; j < subLayers.size(); ++j)
+        const tmx::ObjectGroup& objLayer = layers[i]->getLayerAs<tmx::ObjectGroup>();
+        const std::vector<tmx::Object>& objects = objLayer.getObjects();
+
+        for (size_t j = 0; j < objects.size(); ++j)
         {
-            if (subLayers[j]->getType() != tmx::Layer::Type::Object)
-                continue;
-
-            if (subLayers[j]->getName() != "PlayerSpawn")
-                continue;
-
-            const tmx::ObjectGroup& objLayer = subLayers[j]->getLayerAs<tmx::ObjectGroup>();
-            const std::vector<tmx::Object>& objects = objLayer.getObjects();
-
-            if (objects.size() > 0)
+            const tmx::Object& obj = objects[j];
+            if (obj.getName() == "Start" && !m_hasStartPoint)
             {
-                const tmx::Object& spawnObj = objects[0];
-                m_spawnX = spawnObj.getPosition().x;
-                m_spawnY = spawnObj.getPosition().y;
-                m_hasSpawnPoint = true;
-                break;
+                m_startX = obj.getPosition().x;
+                m_startY = obj.getPosition().y;
+                m_hasStartPoint = true;
+            }
+            else if (obj.getName() == "End")
+            {
+                m_endX = obj.getPosition().x;
+                m_endY = obj.getPosition().y;
+                m_hasEndPoint = true;
             }
         }
-
-        if (m_hasSpawnPoint)
-            break;
+        break;
     }
 }
 
 bool TileMap::GetPlayerSpawnPoint(float& outX, float& outY) const
 {
-    if (m_hasSpawnPoint)
+    if (m_hasStartPoint)
     {
-        outX = m_spawnX;
-        outY = m_spawnY;
+        outX = m_startX;
+        outY = m_startY;
         return true;
     }
     return false;
 }
 
-void TileMap::LoadCoinSpawnPoints()
+bool TileMap::GetEndPoint(float& outX, float& outY) const
 {
-    m_coinSpawnPoints.clear();
-
-    const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
-
-    for (size_t i = 0; i < layers.size(); ++i)
+    if (m_hasEndPoint)
     {
-        if (layers[i]->getType() != tmx::Layer::Type::Group)
-            continue;
-
-        const tmx::LayerGroup& group = layers[i]->getLayerAs<tmx::LayerGroup>();
-        const std::vector<std::unique_ptr<tmx::Layer>>& subLayers = group.getLayers();
-
-        for (size_t j = 0; j < subLayers.size(); ++j)
-        {
-            if (subLayers[j]->getType() != tmx::Layer::Type::Object)
-                continue;
-
-            if (subLayers[j]->getName() != "CoinSpawn")
-                continue;
-
-            const tmx::ObjectGroup& objLayer = subLayers[j]->getLayerAs<tmx::ObjectGroup>();
-            const std::vector<tmx::Object>& objects = objLayer.getObjects();
-
-            for (size_t k = 0; k < objects.size(); ++k)
-            {
-                const tmx::Object& coinObj = objects[k];
-                float x = coinObj.getPosition().x;
-                float y = coinObj.getPosition().y;
-                m_coinSpawnPoints.push_back(std::make_pair(x, y));
-            }
-            break;
-        }
+        outX = m_endX;
+        outY = m_endY;
+        return true;
     }
-}
-
-void TileMap::LoadEnemySpawnPoints()
-{
-    m_enemySpawnPoints.clear();
-
-    const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
-
-    for (size_t i = 0; i < layers.size(); ++i)
-    {
-        if (layers[i]->getType() != tmx::Layer::Type::Group)
-            continue;
-
-        const tmx::LayerGroup& group = layers[i]->getLayerAs<tmx::LayerGroup>();
-        const std::vector<std::unique_ptr<tmx::Layer>>& subLayers = group.getLayers();
-
-        for (size_t j = 0; j < subLayers.size(); ++j)
-        {
-            if (subLayers[j]->getType() != tmx::Layer::Type::Object)
-                continue;
-
-            if (subLayers[j]->getName() != "EnemySpawn")
-                continue;
-
-            const tmx::ObjectGroup& objLayer = subLayers[j]->getLayerAs<tmx::ObjectGroup>();
-            const std::vector<tmx::Object>& objects = objLayer.getObjects();
-
-            for (size_t k = 0; k < objects.size(); ++k)
-            {
-                const tmx::Object& enemyObj = objects[k];
-                float x = enemyObj.getPosition().x;
-                float y = enemyObj.getPosition().y;
-                m_enemySpawnPoints.push_back(std::make_pair(x, y));
-            }
-            break;
-        }
-    }
-}
-
-void TileMap::LoadEnemyZones()
-{
-    m_enemyZonePoints.clear();
-
-    const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
-
-    for (size_t i = 0; i < layers.size(); ++i)
-    {
-        if (layers[i]->getType() != tmx::Layer::Type::Group)
-            continue;
-
-        const tmx::LayerGroup& group = layers[i]->getLayerAs<tmx::LayerGroup>();
-        const std::vector<std::unique_ptr<tmx::Layer>>& subLayers = group.getLayers();
-
-        for (size_t j = 0; j < subLayers.size(); ++j)
-        {
-            if (subLayers[j]->getType() != tmx::Layer::Type::Object)
-                continue;
-
-            if (subLayers[j]->getName() != "EnemyZone")
-                continue;
-
-            const tmx::ObjectGroup& objLayer = subLayers[j]->getLayerAs<tmx::ObjectGroup>();
-            const std::vector<tmx::Object>& objects = objLayer.getObjects();
-
-            for (size_t k = 0; k < objects.size(); ++k)
-            {
-                const tmx::Object& zoneObj = objects[k];
-                // Center the zone boundary point (subtract half sprite width)
-                float x = zoneObj.getPosition().x - 8.0f; // 8 = 16/2 (half sprite width)
-                float y = zoneObj.getPosition().y;
-                m_enemyZonePoints.push_back(std::make_pair(x, y));
-            }
-            break;
-        }
-    }
-}
-
-bool TileMap::GetEnemyZoneBoundaries(float spawnX, float spawnY, float& outLeftX, float& outRightX) const
-{
-    // Find the closest Enemy_Left and Enemy_Right points to this spawn point
-    float closestLeftX = spawnX - 100.0f; // Default fallback
-    float closestRightX = spawnX + 100.0f; // Default fallback
-    float closestLeftDist = 999999.0f;
-    float closestRightDist = 999999.0f;
-    
-    // Search through all zone points
-    for (const auto& point : m_enemyZonePoints)
-    {
-        float zoneX = point.first;
-        float zoneY = point.second;
-        
-        // Calculate distance from spawn point
-        float dx = zoneX - spawnX;
-        float dy = zoneY - spawnY;
-        float dist = sqrt(dx * dx + dy * dy);
-        
-        // If this point is to the left of spawn
-        if (zoneX < spawnX && dist < closestLeftDist)
-        {
-            closestLeftX = zoneX;
-            closestLeftDist = dist;
-        }
-        // If this point is to the right of spawn
-        else if (zoneX > spawnX && dist < closestRightDist)
-        {
-            closestRightX = zoneX;
-            closestRightDist = dist;
-        }
-    }
-    
-    outLeftX = closestLeftX;
-    outRightX = closestRightX;
-    
-    return true;
+    return false;
 }
 
 // Check collision from top (player standing on box)
@@ -659,7 +515,7 @@ void TileMap::RenderCollisionBoxes(Renderer* _renderer, Camera* _camera)
     SDL_Renderer* sdl = _renderer->GetRenderer();
     int mapPixelWidth = GetMapPixelWidth();
     
-    Point screenSize = _renderer->GetWindowSize();
+    Point screenSize = _renderer->GetLogicalSize();
     int screenWidth = screenSize.X;
     
     float cameraX = _camera ? _camera->GetX() : 0.0f;

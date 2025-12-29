@@ -116,6 +116,15 @@ void GameController::HandleInput(SDL_Event _event)
     {
         RestartGame();
     }
+    if (m_gameUI->IsResumeRequested())
+    {
+        m_gameUI->SetState(UIState::Playing);
+    }
+    if (m_gameUI->IsMainMenuRequested())
+    {
+        RestartGame();
+        m_gameUI->SetState(UIState::StartScreen);
+    }
     if (m_gameUI->IsExitRequested())
     {
         m_quit = true;
@@ -147,6 +156,18 @@ void GameController::RunGame()
         // Handle Start Screen state
         if (m_gameUI->GetState() == UIState::StartScreen)
         {
+            m_gameUI->Render(m_renderer, m_score);
+            t->CapFPS();
+            SDL_RenderPresent(m_renderer->GetRenderer());
+            continue;
+        }
+        
+        // Handle Paused state - render but don't update
+        if (m_gameUI->GetState() == UIState::Paused)
+        {
+            m_chunkMap->Render(m_renderer, m_camera);
+            RenderEntities();
+            m_player->Render(m_renderer, m_camera);
             m_gameUI->Render(m_renderer, m_score);
             t->CapFPS();
             SDL_RenderPresent(m_renderer->GetRenderer());

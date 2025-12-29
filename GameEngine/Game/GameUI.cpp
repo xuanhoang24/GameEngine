@@ -11,12 +11,18 @@ GameUI::GameUI()
     m_startButtonRect = { 0, 0, 0, 0 };
     m_exitButtonRect = { 0, 0, 0, 0 };
     m_restartButtonRect = { 0, 0, 0, 0 };
+    m_resumeButtonRect = { 0, 0, 0, 0 };
+    m_mainMenuButtonRect = { 0, 0, 0, 0 };
     m_startRequested = false;
     m_restartRequested = false;
     m_exitRequested = false;
+    m_resumeRequested = false;
+    m_mainMenuRequested = false;
     m_startHovered = false;
     m_exitHovered = false;
     m_restartHovered = false;
+    m_resumeHovered = false;
+    m_mainMenuHovered = false;
 }
 
 GameUI::~GameUI()
@@ -47,9 +53,13 @@ void GameUI::ResetRequests()
     m_startRequested = false;
     m_restartRequested = false;
     m_exitRequested = false;
+    m_resumeRequested = false;
+    m_mainMenuRequested = false;
     m_startHovered = false;
     m_exitHovered = false;
     m_restartHovered = false;
+    m_resumeHovered = false;
+    m_mainMenuHovered = false;
 }
 
 void GameUI::RenderButton(Renderer* _renderer, SDL_Rect& _rect, const char* _text, bool _hovered, bool _isExit)
@@ -92,6 +102,10 @@ void GameUI::Render(Renderer* _renderer, int _score)
             break;
         case UIState::Playing:
             RenderPlayingUI(_renderer, _score);
+            break;
+        case UIState::Paused:
+            RenderPlayingUI(_renderer, _score);
+            RenderPauseMenu(_renderer);
             break;
         case UIState::GameOver:
             RenderPlayingUI(_renderer, _score);
@@ -140,6 +154,42 @@ void GameUI::RenderPlayingUI(Renderer* _renderer, int _score)
     SDL_Color black = { 0, 0, 0, 255 };
     SDL_Point scorePos = { 10, 10 };
     m_font->Write(_renderer->GetRenderer(), ss.str().c_str(), black, scorePos);
+}
+
+void GameUI::RenderPauseMenu(Renderer* _renderer)
+{
+    // Reset viewport
+    SDL_RenderSetViewport(_renderer->GetRenderer(), NULL);
+    
+    Point logicalSize = _renderer->GetLogicalSize();
+    int centerX = logicalSize.X / 2;
+    int centerY = logicalSize.Y / 2;
+    
+    // Draw semi-transparent overlay
+    SDL_SetRenderDrawBlendMode(_renderer->GetRenderer(), SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(_renderer->GetRenderer(), 0, 0, 0, 180);
+    SDL_Rect overlay = { 0, 0, logicalSize.X, logicalSize.Y };
+    SDL_RenderFillRect(_renderer->GetRenderer(), &overlay);
+    
+    // Draw "PAUSED" title
+    int titleW, titleH;
+    m_titleFont->GetTextSize("PAUSED", &titleW, &titleH);
+    SDL_Color yellow = { 255, 220, 50, 255 };
+    SDL_Point titlePos = { centerX - titleW / 2, centerY - 60 };
+    m_titleFont->Write(_renderer->GetRenderer(), "PAUSED", yellow, titlePos);
+    
+    // Buttons
+    int buttonWidth = 80;
+    int buttonHeight = 22;
+    
+    m_resumeButtonRect = { centerX - buttonWidth / 2, centerY - 20, buttonWidth, buttonHeight };
+    RenderButton(_renderer, m_resumeButtonRect, "RESUME", m_resumeHovered, false);
+    
+    m_mainMenuButtonRect = { centerX - buttonWidth / 2, centerY + 10, buttonWidth, buttonHeight };
+    RenderButton(_renderer, m_mainMenuButtonRect, "MAIN MENU", m_mainMenuHovered, false);
+    
+    m_exitButtonRect = { centerX - buttonWidth / 2, centerY + 40, buttonWidth, buttonHeight };
+    RenderButton(_renderer, m_exitButtonRect, "EXIT", m_exitHovered, true);
 }
 
 void GameUI::RenderGameOver(Renderer* _renderer, int _score)
@@ -222,6 +272,44 @@ void GameUI::HandleInput(SDL_Event& _event, Renderer* _renderer)
                 m_startRequested = true;
             if (_event.key.keysym.sym == SDLK_ESCAPE)
                 m_exitRequested = true;
+        }
+    }
+    else if (m_state == UIState::Playing)
+    {
+        // ESC to pause
+        if (_event.type == SDL_KEYDOWN && _event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            SetState(UIState::Paused);
+        }
+    }
+    else if (m_state == UIState::Paused)
+    {
+        m_resumeHovered = (mouseX >= m_resumeButtonRect.x && 
+                           mouseX <= m_resumeButtonRect.x + m_resumeButtonRect.w &&
+                           mouseY >= m_resumeButtonRect.y && 
+                           mouseY <= m_resumeButtonRect.y + m_resumeButtonRect.h);
+        
+        m_mainMenuHovered = (mouseX >= m_mainMenuButtonRect.x && 
+                             mouseX <= m_mainMenuButtonRect.x + m_mainMenuButtonRect.w &&
+                             mouseY >= m_mainMenuButtonRect.y && 
+                             mouseY <= m_mainMenuButtonRect.y + m_mainMenuButtonRect.h);
+        
+        m_exitHovered = (mouseX >= m_exitButtonRect.x && 
+                         mouseX <= m_exitButtonRect.x + m_exitButtonRect.w &&
+                         mouseY >= m_exitButtonRect.y && 
+                         mouseY <= m_exitButtonRect.y + m_exitButtonRect.h);
+        
+        if (_event.type == SDL_MOUSEBUTTONDOWN && _event.button.button == SDL_BUTTON_LEFT)
+        {
+            if (m_resumeHovered) m_resumeRequested = true;
+            if (m_mainMenuHovered) m_mainMenuRequested = true;
+            if (m_exitHovered) m_exitRequested = true;
+        }
+        
+        if (_event.type == SDL_KEYDOWN)
+        {
+            if (_event.key.keysym.sym == SDLK_ESCAPE)
+                m_resumeRequested = true;
         }
     }
     else if (m_state == UIState::GameOver)

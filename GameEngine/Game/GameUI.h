@@ -10,6 +10,7 @@ enum class UIState
 {
     StartScreen,
     Playing,
+    Paused,
     GameOver
 };
 
@@ -29,12 +30,15 @@ public:
     bool IsStartRequested() const { return m_startRequested; }
     bool IsRestartRequested() const { return m_restartRequested; }
     bool IsExitRequested() const { return m_exitRequested; }
+    bool IsResumeRequested() const { return m_resumeRequested; }
+    bool IsMainMenuRequested() const { return m_mainMenuRequested; }
     
     void ResetRequests();
 
 private:
     void RenderStartScreen(Renderer* _renderer);
     void RenderPlayingUI(Renderer* _renderer, int _score);
+    void RenderPauseMenu(Renderer* _renderer);
     void RenderGameOver(Renderer* _renderer, int _score);
     void RenderButton(Renderer* _renderer, SDL_Rect& _rect, const char* _text, bool _hovered, bool _isExit);
     
@@ -46,14 +50,20 @@ private:
     SDL_Rect m_startButtonRect;
     SDL_Rect m_exitButtonRect;
     SDL_Rect m_restartButtonRect;
+    SDL_Rect m_resumeButtonRect;
+    SDL_Rect m_mainMenuButtonRect;
     
     bool m_startRequested;
     bool m_restartRequested;
     bool m_exitRequested;
+    bool m_resumeRequested;
+    bool m_mainMenuRequested;
     
     bool m_startHovered;
     bool m_exitHovered;
     bool m_restartHovered;
+    bool m_resumeHovered;
+    bool m_mainMenuHovered;
 };
 
 #endif // GAME_UI_H

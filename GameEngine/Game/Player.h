@@ -21,14 +21,14 @@ public:
 	void HandleInput(SDL_Event _event);
 	void SetChunkMap(ChunkMap* _map) { m_chunkMap = _map; }
 	void SetSpawnPosition(float x, float y);
-	
+
 	float GetWidth() const { return 16 * scale; }
 	float GetHeight() const { return 16 * scale; }
 	float GetWorldX() const { return m_worldX; }
-	float GetWorldY() const { return m_position.Y; }
+	float GetWorldY() const { return m_posY; }
 
 	void GetCollisionBox(float& outX, float& outY, float& outWidth, float& outHeight) const;
-	
+
 	bool IsMovingDown() const { return m_veloY > 0; }
 	void Die();
 	bool IsDead() const { return m_isDead; }
@@ -41,10 +41,10 @@ private:
 	float m_deathTimer;
 	float m_deathDuration;
 	AnimatedSpriteLoader* m_animLoader;
-	Point m_position;
 	float m_worldX;
+	float m_posY;
 	float scale;
-	
+
 	// Movement
 	float m_walkSpeed;
 	float m_runSpeed;

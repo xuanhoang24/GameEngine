@@ -107,7 +107,7 @@ void GameController::HandleInput(SDL_Event _event)
     if (_event.type == SDL_QUIT)
         m_quit = true;
     
-    m_gameUI->HandleInput(_event);
+    m_gameUI->HandleInput(_event, m_renderer);
     
     // Handle UI requests
     if (m_gameUI->IsStartRequested())

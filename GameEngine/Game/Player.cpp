@@ -8,8 +8,8 @@
 Player::Player()
 {
 	m_animLoader = nullptr;
-	m_position = Point(100, 50);
 	m_worldX = 20.0f;
+	m_posY = 50.0f;
 	scale = 1.0f;
 
 	m_walkSpeed = 150.0f;
@@ -32,7 +32,7 @@ Player::Player()
 	m_jumpMaxHoldTime = 0.2f;
 	m_coyoteTime = 0.12f;
 	m_coyoteTimer = 0.0f;
-	
+
 	m_isDead = false;
 	m_isFullyDead = false;
 	m_deathTimer = 0.0f;
@@ -51,13 +51,13 @@ Player::~Player()
 void Player::Initialize()
 {
 	m_animLoader = new AnimatedSpriteLoader();
-	
+
 	m_animLoader->LoadAnimation("idle", "../Assets/Textures/Player/idle.png", 1, 4, 16, 16, 4, 8.0f);
-	
+
 	m_animLoader->LoadAnimation("run", "../Assets/Textures/Player/run.png", 1, 4, 16, 16, 4, 12.0f);
-	
+
 	m_animLoader->LoadAnimation("jumpandfall", "../Assets/Textures/Player/jumpandfall.png", 1, 2, 16, 16, 2, 8.0f);
-	
+
 	m_animLoader->LoadAnimation("hurt", "../Assets/Textures/Player/hurt.png", 1, 2, 16, 16, 2, 2.0f);
 }
 
@@ -73,7 +73,7 @@ void Player::Update(float _deltaTime)
 		}
 		return;
 	}
-	
+
 	// Clamp deltaTime to prevent huge jumps during loading
 	if (_deltaTime > 0.033f)
 		_deltaTime = 0.033f;
@@ -81,30 +81,24 @@ void Player::Update(float _deltaTime)
 	// Apply movement
 	m_worldX += m_veloX * _deltaTime;
 	m_veloY += m_gravity * _deltaTime;
-	m_position.Y += (unsigned int)(m_veloY * _deltaTime);
+	m_posY += m_veloY * _deltaTime;
 
-	// Check if player fell below death threshold
-	if (m_position.Y > 260)
+	// Check if player fell below death threshold (only die when falling below map)
+	if (m_posY > 260.0f)
 	{
 		Die();
 		return;
 	}
 
-	// Prevent player from going above screen
-	if ((int)m_position.Y < 0)
-	{
-		m_position.Y = 0;
-		m_veloY = 0.0f;
-		m_jumpHoldTimer = 0.0f;
-	}
+	// Allow player to jump freely above the map - gravity will bring them back down
 
 	// Collision detection
 	if (!m_chunkMap)
 	{
 		const float FALLBACK_GROUND = 500.0f;
-		if (m_position.Y + GetHeight() >= FALLBACK_GROUND)
+		if (m_posY + GetHeight() >= FALLBACK_GROUND)
 		{
-			m_position.Y = (unsigned int)(FALLBACK_GROUND - GetHeight());
+			m_posY = FALLBACK_GROUND - GetHeight();
 			m_veloY = 0.0f;
 			m_isGrounded = true;
 			m_isJumping = false;
@@ -150,7 +144,7 @@ void Player::Update(float _deltaTime)
 			{
 				float offsetY = GetHeight() - collisionHeight;
 				// Snap player to ground - handles both landing and passing through
-				m_position.Y = (unsigned int)(groundY - collisionHeight - offsetY);
+				m_posY = groundY - collisionHeight - offsetY;
 				m_veloY = 0.0f;
 				m_isGrounded = true;
 				m_isJumping = false;
@@ -158,9 +152,9 @@ void Player::Update(float _deltaTime)
 			else
 			{
 				const float FALLBACK_GROUND = 500.0f;
-				if (m_position.Y + GetHeight() >= FALLBACK_GROUND)
+				if (m_posY + GetHeight() >= FALLBACK_GROUND)
 				{
-					m_position.Y = (unsigned int)(FALLBACK_GROUND - GetHeight());
+					m_posY = FALLBACK_GROUND - GetHeight();
 					m_veloY = 0.0f;
 					m_isGrounded = true;
 					m_isJumping = false;
@@ -173,7 +167,7 @@ void Player::Update(float _deltaTime)
 			if (m_chunkMap->CheckCollisionBottom(collisionX, collisionY, collisionWidth, collisionHeight, ceilingY))
 			{
 				float offsetY = GetHeight() - collisionHeight;
-				m_position.Y = (unsigned int)(ceilingY - offsetY);
+				m_posY = ceilingY - offsetY;
 				m_veloY = 0.0f;
 				m_jumpHoldTimer = 0.0f;
 			}
@@ -205,18 +199,22 @@ void Player::Render(Renderer* _renderer, Camera* _camera)
 {
 	if (m_isFullyDead)
 		return;
-	
+
 	float width = 16 * scale;
 	float height = 16 * scale;
 
 	// Convert world position to screen position using camera
 	float screenX = _camera ? _camera->WorldToScreenX(m_worldX) : m_worldX;
-	float screenY = m_position.Y;
+	float screenY = m_posY;
+
+	// Don't render if player is above the screen
+	if (screenY + height < 0)
+		return;
 
 	// Destination on the screen
 	Rect destRect(
 		(unsigned)screenX,
-		(unsigned)screenY,
+		(unsigned)(screenY < 0 ? 0 : screenY),
 		(unsigned)(screenX + width),
 		(unsigned)(screenY + height));
 
@@ -225,7 +223,7 @@ void Player::Render(Renderer* _renderer, Camera* _camera)
 	{
 		destRect = Rect(
 			(unsigned)(screenX + width),
-			(unsigned)screenY,
+			(unsigned)(screenY < 0 ? 0 : screenY),
 			(unsigned)screenX,
 			(unsigned)(screenY + height));
 	}
@@ -250,7 +248,7 @@ void Player::RenderCollisionBox(Renderer* _renderer, Camera* _camera)
 	float collisionWidth = 16.0f * scale;
 	float collisionHeight = 16.0f * scale;
 	float collisionX = m_worldX + (GetWidth() - collisionWidth) * 0.5f;
-	float collisionY = m_position.Y + GetHeight() - collisionHeight;
+	float collisionY = m_posY + GetHeight() - collisionHeight;
 
 	// Convert world position to screen position using camera
 	float screenX = _camera ? _camera->WorldToScreenX(collisionX) : collisionX;
@@ -277,7 +275,7 @@ void Player::SetSpawnPosition(float x, float y)
 	// Center the sprite horizontally on the spawn point
 	m_worldX = x;
 	// Position player at the spawn Y (top-left of spawn object)
-	m_position.Y = (unsigned int)y;
+	m_posY = y;
 	m_veloY = 0.0f;
 	m_veloX = 0.0f;
 	m_isGrounded = false;
@@ -289,7 +287,7 @@ void Player::GetCollisionBox(float& outX, float& outY, float& outWidth, float& o
 	outWidth = 16.0f * scale;
 	outHeight = 16.0f * scale;
 	outX = m_worldX + (GetWidth() - outWidth) * 0.5f;
-	outY = m_position.Y + GetHeight() - outHeight;
+	outY = m_posY + GetHeight() - outHeight;
 }
 
 void Player::HandleInput(SDL_Event _event)

@@ -3,9 +3,6 @@
 #include "../Graphics/TTFont.h"
 #include <sstream>
 
-static const int LOGICAL_WIDTH = 483;
-static const int LOGICAL_HEIGHT = 272;
-
 GameUI::GameUI()
 {
     m_titleFont = nullptr;
@@ -105,29 +102,33 @@ void GameUI::Render(Renderer* _renderer, int _score)
 
 void GameUI::RenderStartScreen(Renderer* _renderer)
 {
-    int centerX = LOGICAL_WIDTH / 2;
-    int centerY = LOGICAL_HEIGHT / 2;
+    // Reset viewport to ensure UI renders in full logical space
+    SDL_RenderSetViewport(_renderer->GetRenderer(), NULL);
+    
+    Point logicalSize = _renderer->GetLogicalSize();
+    int centerX = logicalSize.X / 2;
+    int centerY = logicalSize.Y / 2;
     
     // Draw background
     SDL_SetRenderDrawColor(_renderer->GetRenderer(), 30, 30, 50, 255);
-    SDL_Rect bg = { 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT };
+    SDL_Rect bg = { 0, 0, logicalSize.X, logicalSize.Y };
     SDL_RenderFillRect(_renderer->GetRenderer(), &bg);
     
-    // Draw title centered
+    // Draw title centered above buttons
     int titleW, titleH;
     m_titleFont->GetTextSize("Endless Game", &titleW, &titleH);
     SDL_Color yellow = { 255, 220, 50, 255 };
-    SDL_Point titlePos = { centerX - titleW / 2, 60 };
+    SDL_Point titlePos = { centerX - titleW / 2, centerY - 60 };
     m_titleFont->Write(_renderer->GetRenderer(), "Endless Game", yellow, titlePos);
     
-    // Buttons
+    // Buttons - START button at center
     int buttonWidth = 80;
     int buttonHeight = 22;
     
-    m_startButtonRect = { centerX - buttonWidth / 2, centerY + 10, buttonWidth, buttonHeight };
+    m_startButtonRect = { centerX - buttonWidth / 2, centerY - buttonHeight / 2, buttonWidth, buttonHeight };
     RenderButton(_renderer, m_startButtonRect, "START", m_startHovered, false);
     
-    m_exitButtonRect = { centerX - buttonWidth / 2, centerY + 45, buttonWidth, buttonHeight };
+    m_exitButtonRect = { centerX - buttonWidth / 2, centerY + 35, buttonWidth, buttonHeight };
     RenderButton(_renderer, m_exitButtonRect, "EXIT", m_exitHovered, true);
 }
 
@@ -136,20 +137,24 @@ void GameUI::RenderPlayingUI(Renderer* _renderer, int _score)
     // Render score
     std::stringstream ss;
     ss << "Score: " << _score;
-    SDL_Color white = { 255, 255, 255, 255 };
+    SDL_Color black = { 0, 0, 0, 255 };
     SDL_Point scorePos = { 10, 10 };
-    m_font->Write(_renderer->GetRenderer(), ss.str().c_str(), white, scorePos);
+    m_font->Write(_renderer->GetRenderer(), ss.str().c_str(), black, scorePos);
 }
 
 void GameUI::RenderGameOver(Renderer* _renderer, int _score)
 {
-    int centerX = LOGICAL_WIDTH / 2;
-    int centerY = LOGICAL_HEIGHT / 2;
+    // Reset viewport to ensure UI renders in full logical space
+    SDL_RenderSetViewport(_renderer->GetRenderer(), NULL);
+    
+    Point logicalSize = _renderer->GetLogicalSize();
+    int centerX = logicalSize.X / 2;
+    int centerY = logicalSize.Y / 2;
     
     // Draw semi-transparent overlay
     SDL_SetRenderDrawBlendMode(_renderer->GetRenderer(), SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(_renderer->GetRenderer(), 0, 0, 0, 180);
-    SDL_Rect overlay = { 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT };
+    SDL_Rect overlay = { 0, 0, logicalSize.X, logicalSize.Y };
     SDL_RenderFillRect(_renderer->GetRenderer(), &overlay);
     
     // Draw "GAME OVER" title
@@ -179,14 +184,18 @@ void GameUI::RenderGameOver(Renderer* _renderer, int _score)
     RenderButton(_renderer, m_exitButtonRect, "EXIT", m_exitHovered, true);
 }
 
-void GameUI::HandleInput(SDL_Event& _event)
+void GameUI::HandleInput(SDL_Event& _event, Renderer* _renderer)
 {
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
     
-    // Convert to logical coordinates
-    mouseX = (int)(mouseX * 483.0f / 1280.0f);
-    mouseY = (int)(mouseY * 272.0f / 720.0f);
+    // Get actual window and logical sizes from renderer
+    Point windowSize = _renderer->GetWindowSize();
+    Point logicalSize = _renderer->GetLogicalSize();
+    
+    // Convert to logical coordinates using actual sizes
+    mouseX = (int)(mouseX * (float)logicalSize.X / (float)windowSize.X);
+    mouseY = (int)(mouseY * (float)logicalSize.Y / (float)windowSize.Y);
     
     // Update hover states based on current UI state
     if (m_state == UIState::StartScreen)

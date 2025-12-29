@@ -21,7 +21,7 @@ public:
 
     void Initialize();
     void Render(Renderer* _renderer, int _score);
-    void HandleInput(SDL_Event& _event);
+    void HandleInput(SDL_Event& _event, Renderer* _renderer);
     
     UIState GetState() const { return m_state; }
     void SetState(UIState _state);

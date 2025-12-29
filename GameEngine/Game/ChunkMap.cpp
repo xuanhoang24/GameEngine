@@ -302,6 +302,7 @@ bool ChunkMap::CheckCollisionBottom(float _x, float _y, float _width, float _hei
 bool ChunkMap::CheckCollisionLeft(float _x, float _y, float _width, float _height, float& _outWallX) const
 {
     float playerRight = _x + _width;
+    float playerBottom = _y + _height;
     float bestX = 100000.0f;
     bool found = false;
     
@@ -319,7 +320,13 @@ bool ChunkMap::CheckCollisionLeft(float _x, float _y, float _width, float _heigh
                 float shapeRight = shapeX + shape.width;
                 float shapeBottom = shapeY + shape.height;
                 
+                // Skip if no vertical overlap
                 if (_y + _height <= shapeY || _y >= shapeBottom) continue;
+                
+                // Only detect as wall if player is NOT standing on top of this shape
+                // (i.e., player's bottom is below the shape's top surface)
+                bool isStandingOnTop = (playerBottom >= shapeY && playerBottom <= shapeY + 5.0f);
+                if (isStandingOnTop) continue;
                 
                 if (playerRight >= shapeX && playerRight <= shapeX + 5.0f && shapeX < bestX)
                 {
@@ -341,6 +348,7 @@ bool ChunkMap::CheckCollisionLeft(float _x, float _y, float _width, float _heigh
 bool ChunkMap::CheckCollisionRight(float _x, float _y, float _width, float _height, float& _outWallX) const
 {
     float playerLeft = _x;
+    float playerBottom = _y + _height;
     float bestX = -100000.0f;
     bool found = false;
     
@@ -358,7 +366,12 @@ bool ChunkMap::CheckCollisionRight(float _x, float _y, float _width, float _heig
                 float shapeRight = shapeX + shape.width;
                 float shapeBottom = shapeY + shape.height;
                 
+                // Skip if no vertical overlap
                 if (_y + _height <= shapeY || _y >= shapeBottom) continue;
+                
+                // Only detect as wall if player is NOT standing on top of this shape
+                bool isStandingOnTop = (playerBottom >= shapeY && playerBottom <= shapeY + 5.0f);
+                if (isStandingOnTop) continue;
                 
                 if (playerLeft <= shapeRight && playerLeft >= shapeRight - 5.0f && shapeRight > bestX)
                 {

@@ -59,15 +59,13 @@ void GameController::Initialize()
         "../Assets/Maps/Chunk/chunk_gap_01.tmx"
     );
     
+    // Set logical size based on map height (zooms camera to fit map)
+    int mapHeight = m_chunkMap->GetMapPixelHeight();
+    m_renderer->SetLogicalSizeFromMapHeight(mapHeight);
+    
     // Connect player to chunk map for collision
     m_player->SetChunkMap(m_chunkMap);
-    
-    // Set player spawn position from map
-    float spawnX, spawnY;
-    if (m_chunkMap->GetPlayerSpawnPoint(spawnX, spawnY))
-    {
-        m_player->SetSpawnPosition(spawnX, spawnY);
-    }
+   
     
     // Initialize UI
     m_gameUI = new GameUI();
@@ -198,10 +196,8 @@ void GameController::RestartGame()
     m_chunkMap->Reset();
     
     float spawnX, spawnY;
-    if (m_chunkMap->GetPlayerSpawnPoint(spawnX, spawnY))
-    {
-        m_player->SetSpawnPosition(spawnX, spawnY);
-    }
+    m_chunkMap->GetPlayerSpawnPoint(spawnX, spawnY);
+    m_player->SetSpawnPosition(spawnX, spawnY);
     
     m_camera->Reset();
     m_score = 0;

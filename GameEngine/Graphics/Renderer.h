@@ -25,6 +25,8 @@ public:
     void EnumerateDisplayModes();
     Point GetWindowSize();
     Point GetLogicalSize();
+    void SetLogicalSize(int _width, int _height);
+    void SetLogicalSizeFromMapHeight(int _mapHeight);
     void SetDrawColor(Color _color);
     void ClearScreen();
     void SetViewport(Rect _viewport);

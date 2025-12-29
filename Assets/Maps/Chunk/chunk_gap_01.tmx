@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="6">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="9">
  <tileset firstgid="1" name="grass-tilemap-1" tilewidth="16" tileheight="16" tilecount="91" columns="13">
   <image source="../Images/grass-tilemap-1.png" width="208" height="112"/>
  </tileset>
@@ -7,17 +7,17 @@
   <image source="../Images/flowersAndGrass.png" width="80" height="16"/>
  </tileset>
  <objectgroup id="3" name="Collision">
-  <object id="1" x="0" y="48" width="63.3333" height="112"/>
-  <object id="5" x="160" y="48" width="80" height="112"/>
+  <object id="6" x="0" y="96" width="64" height="64"/>
+  <object id="7" x="160" y="96" width="80" height="64"/>
  </objectgroup>
  <objectgroup id="4" name="Meta">
-  <object id="2" name="Start" x="0" y="48">
+  <object id="2" name="Start" x="0" y="96">
    <properties>
     <property name="Type" value="Start"/>
    </properties>
    <point/>
   </object>
-  <object id="3" name="End" x="240" y="48">
+  <object id="3" name="End" x="240" y="96">
    <properties>
     <property name="Type" value="End"/>
    </properties>
@@ -25,7 +25,7 @@
   </object>
  </objectgroup>
  <objectgroup id="5" name="Gameplay">
-  <object id="11" name="coin_spawn_zone" x="81.3334" y="2.33333" width="69.333" height="32">
+  <object id="11" name="coin_spawn_zone" x="76.8221" y="49.583" width="69.333" height="32">
    <properties>
     <property name="chance" type="float" value="0.8"/>
     <property name="maxCount" type="int" value="3"/>
@@ -36,12 +36,12 @@
  </objectgroup>
  <layer id="1" name="Ground" width="15" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBh6gBGImaCYmUh1MLV8QMwPxQJ49CKrg6mVBmIZKJbFoxdZHUztUNSrAcSaUKyFRy+yOphaAL8tBfs=
+   eJxjYBgF9ABMSJgZjzpGNLUgzI+EBfDo5UNTC8IySFgWj15pNLUgrImEtfDo1UBTC8IA5oADBw==
   </data>
  </layer>
  <layer id="2" name="Decoration" width="15" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBgYEAPEsUAcB8QJeNTB1MRD1cXS2mGjgCoAANOnA08=
+   eJxjYBgFxIIYII4F4jggTsCjDqYmHqoultYOG4QAAICxA08=
   </data>
  </layer>
 </map>

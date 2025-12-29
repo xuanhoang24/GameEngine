@@ -26,19 +26,7 @@ void Renderer::Initialize()
     m_renderer = SDL_CreateRenderer(m_window, -1, 0);
     M_ASSERT(m_renderer != nullptr, "Failed to initialize SDL renderer.");
     
-    // Set logical rendering size (scaled to fit 1280×720 window)
-    // 
-    // HOW TO CALCULATE:
-    // 1. Map height: 17 tiles × 16 pixels = 272 pixels
-    // 2. Calculate width to fill screen: 272 × (1280/720) = 272 × 1.778 = 483.5 pixels
-    // 3. This gives us ~30 tiles wide (483÷16 = 30.2 tiles)
-    // 
-    // Fill screen with no letterboxing, showing full 17-tile height
-    //   Width:  483 pixels (~30 tiles)
-    //   Height: 272 pixels (17 tiles)
-
-    SDL_RenderSetLogicalSize(m_renderer, 483, 272);
-    
+    // Logical size will be set after map loads via SetLogicalSizeFromMapHeight()
     SDL_RenderSetIntegerScale(m_renderer, SDL_FALSE);
 }
 
@@ -170,6 +158,18 @@ Point Renderer::GetLogicalSize()
     if (w == 0 || h == 0)
         return GetWindowSize();
     return Point(w, h);
+}
+
+void Renderer::SetLogicalSize(int _width, int _height)
+{
+    SDL_RenderSetLogicalSize(m_renderer, _width, _height);
+}
+
+void Renderer::SetLogicalSizeFromMapHeight(int _mapHeight)
+{
+    // Calculate width to maintain 16:9 aspect ratio (1280/720)
+    int logicalWidth = (int)(_mapHeight * (1280.0f / 720.0f));
+    SDL_RenderSetLogicalSize(m_renderer, logicalWidth, _mapHeight);
 }
 
 void Renderer::SetViewport(Rect _viewport)

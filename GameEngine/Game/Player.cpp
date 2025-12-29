@@ -149,15 +149,11 @@ void Player::Update(float _deltaTime)
 			if (m_chunkMap->CheckCollisionTop(collisionX, collisionY, collisionWidth, collisionHeight, groundY))
 			{
 				float offsetY = GetHeight() - collisionHeight;
-				float distanceToGround = groundY - (collisionY + collisionHeight);
-				
-				if (distanceToGround <= 5.0f)
-				{
-					m_position.Y = (unsigned int)(groundY - collisionHeight - offsetY);
-					m_veloY = 0.0f;
-					m_isGrounded = true;
-					m_isJumping = false;
-				}
+				// Snap player to ground - handles both landing and passing through
+				m_position.Y = (unsigned int)(groundY - collisionHeight - offsetY);
+				m_veloY = 0.0f;
+				m_isGrounded = true;
+				m_isJumping = false;
 			}
 			else
 			{
@@ -277,10 +273,11 @@ void Player::RenderCollisionBox(Renderer* _renderer, Camera* _camera)
 
 void Player::SetSpawnPosition(float x, float y)
 {
+	// x,y is the top-left of the spawn point in Tiled
 	// Center the sprite horizontally on the spawn point
-	m_worldX = x - (GetWidth() * 0.5f);
-	// Adjust Y so the bottom of the sprite is at the spawn point
-	m_position.Y = (unsigned int)(y - GetHeight());
+	m_worldX = x;
+	// Position player at the spawn Y (top-left of spawn object)
+	m_position.Y = (unsigned int)y;
 	m_veloY = 0.0f;
 	m_veloX = 0.0f;
 	m_isGrounded = false;

@@ -271,13 +271,9 @@ void TileMap::LoadSpawnPoint()
 
     const std::vector<std::unique_ptr<tmx::Layer>>& layers = m_map.getLayers();
     
-    // Look for "Start" and "End" points in "Meta" object group (chunk maps)
     for (size_t i = 0; i < layers.size(); ++i)
     {
         if (layers[i]->getType() != tmx::Layer::Type::Object)
-            continue;
-
-        if (layers[i]->getName() != "Meta")
             continue;
 
         const tmx::ObjectGroup& objLayer = layers[i]->getLayerAs<tmx::ObjectGroup>();
@@ -286,7 +282,16 @@ void TileMap::LoadSpawnPoint()
         for (size_t j = 0; j < objects.size(); ++j)
         {
             const tmx::Object& obj = objects[j];
-            if (obj.getName() == "Start" && !m_hasStartPoint)
+            
+            // Look for PlayerSpawn object
+            if ((obj.getName() == "PlayerSpawn" || layers[i]->getName() == "PlayerSpawn") && !m_hasStartPoint)
+            {
+                m_startX = obj.getPosition().x;
+                m_startY = obj.getPosition().y;
+                m_hasStartPoint = true;
+            }
+            // Also check for Start point
+            else if (obj.getName() == "Start" && !m_hasStartPoint)
             {
                 m_startX = obj.getPosition().x;
                 m_startY = obj.getPosition().y;
@@ -299,7 +304,6 @@ void TileMap::LoadSpawnPoint()
                 m_hasEndPoint = true;
             }
         }
-        break;
     }
 }
 

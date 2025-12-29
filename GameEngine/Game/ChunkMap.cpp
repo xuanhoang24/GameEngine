@@ -7,7 +7,6 @@ ChunkMap::ChunkMap()
     , m_gapChunk(nullptr)
     , m_nextChunkX(0.0f)
     , m_chunkWidth(0)
-    , m_yOffset(0)
     , m_rng(std::random_device{}())
     , m_dist(1, 100)
 {
@@ -42,11 +41,6 @@ bool ChunkMap::Load(const string& _startChunkPath, const string& _randomChunkPat
     
     // Get chunk width from start chunk
     m_chunkWidth = m_startChunk->GetMapPixelWidth();
-    
-    // Calculate Y offset to position map at bottom of screen
-    // Logical screen height is 272, map height varies
-    int mapPixelHeight = m_startChunk->GetMapPixelHeight();
-    m_yOffset = 272 - mapPixelHeight;  // Position at bottom of 272px logical height
     
     // Spawn the start chunk at position 0
     ChunkInstance startInstance;
@@ -144,11 +138,6 @@ void ChunkMap::RenderChunkWithOffset(Renderer* _renderer, Camera* _camera, const
     int mapHeight = tileMap->GetMapHeight();
     int tileWidth = tileMap->GetTileWidth();
     int tileHeight = tileMap->GetTileHeight();
-    
-    // Calculate Y offset to position map at bottom of screen
-    Point logicalSize = _renderer->GetLogicalSize();
-    int mapPixelHeight = mapHeight * tileHeight;
-    int offsetY = logicalSize.Y - mapPixelHeight;
         
     // Render tile layers
     const auto& layers = tileMap->GetLayers();
@@ -180,7 +169,7 @@ void ChunkMap::RenderChunkWithOffset(Renderer* _renderer, Camera* _camera, const
                 
                 SDL_Rect dst;
                 dst.x = (int)(x * tileWidth + offsetX - cameraX);
-                dst.y = y * tileHeight + offsetY;
+                dst.y = y * tileHeight;
                 dst.w = tileWidth;
                 dst.h = tileHeight;
                 
@@ -218,7 +207,7 @@ void ChunkMap::RenderCollisionBoxes(Renderer* _renderer, Camera* _camera)
                 
                 SDL_Rect rect;
                 rect.x = (int)shapeScreenX;
-                rect.y = (int)(shape.y + m_yOffset);  // Add Y offset
+                rect.y = (int)shape.y;
                 rect.w = (int)shape.width;
                 rect.h = (int)shape.height;
                 
@@ -232,6 +221,7 @@ bool ChunkMap::CheckCollisionTop(float _x, float _y, float _width, float _height
 {
     float bestY = 100000.0f;
     bool found = false;
+    float playerBottom = _y + _height;
     
     for (const auto& chunk : m_activeChunks)
     {
@@ -243,12 +233,15 @@ bool ChunkMap::CheckCollisionTop(float _x, float _y, float _width, float _height
             if (shape.type == CollisionType::Rectangle)
             {
                 float shapeX = shape.x + chunk.worldOffsetX;
-                float shapeY = shape.y + m_yOffset;  // Add Y offset
+                float shapeY = shape.y;
                 float shapeRight = shapeX + shape.width;
+                float shapeBottom = shapeY + shape.height;
                 
+                // Skip if player is not horizontally overlapping
                 if (_x + _width <= shapeX || _x >= shapeRight) continue;
                 
-                if (shapeY >= _y && shapeY < bestY)
+                // Ground collision: player's bottom is at or below ground top,
+                if (playerBottom >= shapeY && _y < shapeBottom && shapeY < bestY)
                 {
                     bestY = shapeY;
                     found = true;
@@ -280,7 +273,7 @@ bool ChunkMap::CheckCollisionBottom(float _x, float _y, float _width, float _hei
             if (shape.type == CollisionType::Rectangle)
             {
                 float shapeX = shape.x + chunk.worldOffsetX;
-                float shapeY = shape.y + m_yOffset;  // Add Y offset
+                float shapeY = shape.y;
                 float shapeRight = shapeX + shape.width;
                 float shapeBottom = shapeY + shape.height;
                 
@@ -322,7 +315,7 @@ bool ChunkMap::CheckCollisionLeft(float _x, float _y, float _width, float _heigh
             if (shape.type == CollisionType::Rectangle)
             {
                 float shapeX = shape.x + chunk.worldOffsetX;
-                float shapeY = shape.y + m_yOffset;  // Add Y offset
+                float shapeY = shape.y;
                 float shapeRight = shapeX + shape.width;
                 float shapeBottom = shapeY + shape.height;
                 
@@ -361,7 +354,7 @@ bool ChunkMap::CheckCollisionRight(float _x, float _y, float _width, float _heig
             if (shape.type == CollisionType::Rectangle)
             {
                 float shapeX = shape.x + chunk.worldOffsetX;
-                float shapeY = shape.y + m_yOffset;  // Add Y offset
+                float shapeY = shape.y;
                 float shapeRight = shapeX + shape.width;
                 float shapeBottom = shapeY + shape.height;
                 
@@ -413,12 +406,12 @@ bool ChunkMap::GetPlayerSpawnPoint(float& outX, float& outY) const
 {
     if (m_startChunk)
     {
-        bool result = m_startChunk->GetPlayerSpawnPoint(outX, outY);
-        if (result)
-        {
-            outY += m_yOffset;  // Add Y offset
+        if (m_startChunk->GetPlayerSpawnPoint(outX, outY))
             return true;
-        }
     }
+    
+    // Default spawn point if none found in map
+    outX = 32.0f;
+    outY = 0.0f;
     return false;
 }

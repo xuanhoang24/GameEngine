@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="4">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="7">
  <tileset firstgid="1" name="grass-tilemap-1" tilewidth="16" tileheight="16" tilecount="91" columns="13">
   <image source="../Images/grass-tilemap-1.png" width="208" height="112"/>
  </tileset>
@@ -7,16 +7,16 @@
   <image source="../Images/flowersAndGrass.png" width="80" height="16"/>
  </tileset>
  <objectgroup id="3" name="Collision">
-  <object id="1" x="0" y="48" width="240" height="112"/>
+  <object id="5" x="0" y="96" width="240" height="64"/>
  </objectgroup>
  <objectgroup id="4" name="Meta">
-  <object id="2" name="Start" x="0" y="48">
+  <object id="2" name="Start" x="0" y="96">
    <properties>
     <property name="Type" value="Start"/>
    </properties>
    <point/>
   </object>
-  <object id="3" name="End" x="240" y="48">
+  <object id="3" name="End" x="240" y="96">
    <properties>
     <property name="Type" value="End"/>
    </properties>
@@ -24,7 +24,7 @@
   </object>
  </objectgroup>
  <objectgroup id="5" name="Gameplay">
-  <object id="10" name="enemy_spawn_zone" x="64" y="32" width="107" height="16">
+  <object id="10" name="enemy_spawn_zone" x="64.7123" y="79.962" width="107" height="16">
    <properties>
     <property name="chance" type="float" value="0.7"/>
     <property name="enemyTypes" value="ghost,mushroom"/>
@@ -33,7 +33,7 @@
     <property name="spawnType" value="enemy"/>
    </properties>
   </object>
-  <object id="11" name="coin_spawn_zone" x="32.6667" y="16" width="167.333" height="32">
+  <object id="11" name="coin_spawn_zone" x="33.379" y="63.962" width="167.333" height="32">
    <properties>
     <property name="chance" type="float" value="0.8"/>
     <property name="maxCount" type="int" value="3"/>
@@ -44,12 +44,12 @@
  </objectgroup>
  <layer id="1" name="Ground" width="15" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBh6gBGImcjAzEDMB8T8ZGABIJYGYhkysOwQ1asBxJpkYC0gBgBKJgn3
+   eJxjYBgF9ABMFGB+CrAMBViTAgwAhKcFCw==
   </data>
  </layer>
  <layer id="2" name="Decoration" width="15" height="10">
   <data encoding="base64" compression="zlib">
-   eJxjYBgYEAPEsUAcB8QJSGwYHY8mjswfBYMfAAC9uwWE
+   eJxjYBgFxIIYII4F4jggTkBiw+h4NHFk/kgDAN1jBYQ=
   </data>
  </layer>
 </map>

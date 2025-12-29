@@ -42,7 +42,6 @@ public:
     // Getters
     int GetChunkPixelWidth() const;
     int GetMapPixelHeight() const;
-    int GetYOffset() const { return m_yOffset; }
 
 private:
     void SpawnNextChunk();
@@ -65,7 +64,6 @@ private:
     // World state
     float m_nextChunkX;         // X position where next chunk should spawn
     int m_chunkWidth;           // Width of each chunk in pixels
-    int m_yOffset;              // Y offset to position map at bottom of screen
     
     // Random number generator
     std::mt19937 m_rng;

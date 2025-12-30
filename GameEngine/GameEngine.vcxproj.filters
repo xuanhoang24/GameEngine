@@ -247,10 +247,22 @@
     <ClCompile Include="Game\GameUI.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="Game\UIButton.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
     <ClCompile Include="Game\Level.cpp">
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="Game\Unit.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Coin.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Enemy.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\WorldEntity.cpp">
       <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
@@ -264,10 +276,22 @@
     <ClInclude Include="Game\GameUI.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Game\UIButton.h">
+      <Filter>Game</Filter>
+    </ClInclude>
     <ClInclude Include="Game\Level.h">
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\Unit.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Coin.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Enemy.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\WorldEntity.h">
       <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>

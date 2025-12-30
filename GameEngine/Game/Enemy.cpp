@@ -1,16 +1,8 @@
 #include "../Game/Enemy.h"
 #include "../Graphics/Camera.h"
-#include "../Core/Timing.h"
 
 Enemy::Enemy()
 {
-	m_animLoader = nullptr;
-	m_worldX = 0.0f;
-	m_worldY = 0.0f;
-	m_baseX = 0.0f;
-	m_baseY = 0.0f;
-	m_isActive = true;
-	m_currentMapInstance = 0;
 	m_type = EnemyType::Ghost;
 	m_moveSpeed = 50.0f;
 	m_direction = 1.0f;
@@ -20,28 +12,17 @@ Enemy::Enemy()
 
 Enemy::~Enemy()
 {
-	if (m_animLoader)
-	{
-		delete m_animLoader;
-		m_animLoader = nullptr;
-	}
 }
 
-void Enemy::Initialize(float x, float y, EnemyType type)
+void Enemy::Initialize(float x, float y)
 {
+	Initialize(x, y, EnemyType::Ghost, x - 50.0f, x + 50.0f);
 }
 
 void Enemy::Initialize(float x, float y, EnemyType type, float leftBoundary, float rightBoundary)
 {
-	// Store base position within single map
-	m_baseX = x - (GetWidth() * 0.5f);
-	m_baseY = y - GetHeight();
+	SetBasePosition(x, y);
 	
-	// Initial world position is same as base
-	m_worldX = m_baseX;
-	m_worldY = m_baseY;
-	
-	// Store base boundaries within single map
 	m_baseLeftBoundary = leftBoundary;
 	m_baseRightBoundary = rightBoundary;
 	
@@ -51,20 +32,13 @@ void Enemy::Initialize(float x, float y, EnemyType type, float leftBoundary, flo
 	
 	RandomEnemy();
 	
-	// Random initial direction
 	m_direction = (rand() % 2 == 0) ? -1.0f : 1.0f;
 }
 
 void Enemy::Update(float _deltaTime, float _cameraX, int _screenWidth, int _mapPixelWidth)
 {
-	// Check if enemy went behind camera (left of screen) - reposition ahead
-	float cameraLeftEdge = _cameraX;
-	float enemyRightEdge = m_worldX + GetWidth();
-	
-	if (enemyRightEdge < cameraLeftEdge - 50.0f) // 50px buffer behind camera
-	{
-		RepositionAhead(_cameraX, _screenWidth, _mapPixelWidth);
-	}
+	// Call base class update for repositioning logic
+	WorldEntity::Update(_deltaTime, _cameraX, _screenWidth, _mapPixelWidth);
 	
 	if (!m_isActive)
 		return;
@@ -90,68 +64,14 @@ void Enemy::Update(float _deltaTime, float _cameraX, int _screenWidth, int _mapP
 	}
 }
 
-void Enemy::RepositionAhead(float _cameraX, int _screenWidth, int _mapPixelWidth)
+void Enemy::OnRepositionAhead()
 {
-	// Calculate which map instance is ahead of camera (right side of screen + buffer)
-	float aheadX = _cameraX + _screenWidth + 100.0f; // 100px buffer ahead
-	int targetMapInstance = (int)floor(aheadX / _mapPixelWidth);
-	
-	// Make sure moving forward, not backward
-	if (targetMapInstance <= m_currentMapInstance)
-		targetMapInstance = m_currentMapInstance + 1;
-	
-	// Update to new map instance
-	m_currentMapInstance = targetMapInstance;
-	
-	// Reset position to base position in new map instance
-	float mapOffset = m_currentMapInstance * _mapPixelWidth;
-	m_worldX = m_baseX + mapOffset;
-	m_worldY = m_baseY;
-	
-	// Reactivate and reset direction
-	m_isActive = true;
 	m_direction = (rand() % 2 == 0) ? -1.0f : 1.0f;
-}
-
-void Enemy::Render(Renderer* _renderer, Camera* _camera)
-{
-	if (!m_isActive)
-		return;
-	
-	float width = GetWidth();
-	float height = GetHeight();
-	
-	// Convert world position to screen position
-	float screenX = _camera ? _camera->WorldToScreenX(m_worldX) : m_worldX;
-	float screenY = m_worldY;
-	
-	// Only render if on screen (with buffer for smooth appearance)
-	Point screenSize = _renderer->GetWindowSize();
-	if (screenX < -width || screenX > screenSize.X + width)
-		return;
-	
-	Rect destRect(
-		(unsigned)screenX,
-		(unsigned)screenY,
-		(unsigned)(screenX + width),
-		(unsigned)(screenY + height));
-	
-	string currentAnim = "idle";
-	
-	Rect srcRect = m_animLoader->UpdateAnimation(currentAnim, Timing::Instance().GetDeltaTime());
-	Texture* currentTexture = m_animLoader->GetTexture(currentAnim);
-	
-	if (currentTexture)
-		_renderer->RenderTexture(currentTexture, srcRect, destRect);
 }
 
 void Enemy::Reset()
 {
-	// Reset to original spawn position
-	m_worldX = m_baseX;
-	m_worldY = m_baseY;
-	m_currentMapInstance = 0;
-	m_isActive = true;
+	WorldEntity::Reset();
 	m_direction = (rand() % 2 == 0) ? -1.0f : 1.0f;
 	
 	// Randomize enemy type on reset

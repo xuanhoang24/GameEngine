@@ -231,19 +231,23 @@ copy /y "$(SolutionDir)External\SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(Targ
     <ClCompile Include="Game\Player.cpp" />
     <ClCompile Include="Game\ChunkMap.cpp" />
     <ClCompile Include="Game\GameUI.cpp" />
+    <ClCompile Include="Game\UIButton.cpp" />
     <ClCompile Include="Game\Level.cpp" />
     <ClCompile Include="Game\Unit.cpp" />
     <ClCompile Include="Game\Coin.cpp" />
     <ClCompile Include="Game\Enemy.cpp" />
+    <ClCompile Include="Game\WorldEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Player.h" />
     <ClInclude Include="Game\ChunkMap.h" />
     <ClInclude Include="Game\GameUI.h" />
+    <ClInclude Include="Game\UIButton.h" />
     <ClInclude Include="Game\Level.h" />
     <ClInclude Include="Game\Unit.h" />
     <ClInclude Include="Game\Coin.h" />
     <ClInclude Include="Game\Enemy.h" />
+    <ClInclude Include="Game\WorldEntity.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

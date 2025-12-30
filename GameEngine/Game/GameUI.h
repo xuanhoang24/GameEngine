@@ -2,6 +2,7 @@
 #define GAME_UI_H
 
 #include "../Core/StandardIncludes.h"
+#include "../Game/UIButton.h"
 
 class Renderer;
 class TTFont;
@@ -30,11 +31,11 @@ public:
     UIState GetState() const { return m_state; }
     void SetState(UIState _state);
     
-    bool IsStartRequested() const { return m_startRequested; }
-    bool IsRestartRequested() const { return m_restartRequested; }
-    bool IsExitRequested() const { return m_exitRequested; }
-    bool IsResumeRequested() const { return m_resumeRequested; }
-    bool IsMainMenuRequested() const { return m_mainMenuRequested; }
+    bool IsStartRequested() const { return m_startButton.IsClicked() || m_keyStartRequested; }
+    bool IsRestartRequested() const { return m_restartButton.IsClicked() || m_keyRestartRequested; }
+    bool IsExitRequested() const { return m_exitButton.IsClicked() || m_keyExitRequested; }
+    bool IsResumeRequested() const { return m_resumeButton.IsClicked() || m_keyResumeRequested; }
+    bool IsMainMenuRequested() const { return m_mainMenuButton.IsClicked(); }
     
     void ResetRequests();
 
@@ -43,8 +44,10 @@ private:
     void RenderPlayingUI(Renderer* _renderer, int _score, Player* _player);
     void RenderPauseMenu(Renderer* _renderer);
     void RenderGameOver(Renderer* _renderer, int _score);
-    void RenderButton(Renderer* _renderer, SDL_Rect& _rect, const char* _text, bool _hovered, bool _isExit);
     void RenderHearts(Renderer* _renderer, int _health, int _maxHealth);
+    
+    // Convert screen coordinates to logical coordinates
+    void ConvertToLogicalCoords(Renderer* _renderer, int& mouseX, int& mouseY);
     
     TTFont* m_titleFont;
     TTFont* m_font;
@@ -54,23 +57,18 @@ private:
     
     UIState m_state;
     
-    SDL_Rect m_startButtonRect;
-    SDL_Rect m_exitButtonRect;
-    SDL_Rect m_restartButtonRect;
-    SDL_Rect m_resumeButtonRect;
-    SDL_Rect m_mainMenuButtonRect;
+    // UI Buttons
+    UIButton m_startButton;
+    UIButton m_exitButton;
+    UIButton m_restartButton;
+    UIButton m_resumeButton;
+    UIButton m_mainMenuButton;
     
-    bool m_startRequested;
-    bool m_restartRequested;
-    bool m_exitRequested;
-    bool m_resumeRequested;
-    bool m_mainMenuRequested;
-    
-    bool m_startHovered;
-    bool m_exitHovered;
-    bool m_restartHovered;
-    bool m_resumeHovered;
-    bool m_mainMenuHovered;
+    // For keyboard shortcuts
+    bool m_keyStartRequested;
+    bool m_keyExitRequested;
+    bool m_keyRestartRequested;
+    bool m_keyResumeRequested;
 };
 
 #endif // GAME_UI_H

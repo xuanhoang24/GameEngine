@@ -1,6 +1,5 @@
 #include "../Game/Coin.h"
 #include "../Graphics/Camera.h"
-#include "../Core/Timing.h"
 #include <random>
 
 static CoinTextureInfo GetRandomCoinTexture()
@@ -21,35 +20,17 @@ static CoinTextureInfo GetRandomCoinTexture()
 
 Coin::Coin()
 {
-	m_animLoader = nullptr;
-	m_worldX = 0.0f;
-	m_worldY = 0.0f;
-	m_baseX = 0.0f;
-	m_baseY = 0.0f;
-	m_isActive = true;
-	m_currentMapInstance = 0;
 	m_coinType = CoinType::Coin1;
 	m_pointValue = 10;
 }
 
 Coin::~Coin()
 {
-	if (m_animLoader)
-	{
-		delete m_animLoader;
-		m_animLoader = nullptr;
-	}
 }
 
 void Coin::Initialize(float x, float y)
 {
-	// Store base position within single map
-	m_baseX = x - (GetWidth() * 0.5f);
-	m_baseY = y - GetHeight();
-	
-	// Initial world position is same as base
-	m_worldX = m_baseX;
-	m_worldY = m_baseY;
+	SetBasePosition(x, y);
 	
 	m_isActive = true;
 	m_currentMapInstance = 0;
@@ -57,84 +38,14 @@ void Coin::Initialize(float x, float y)
 	RandomCoin();
 }
 
-void Coin::Update(float _deltaTime, float _cameraX, int _screenWidth, int _mapPixelWidth)
+void Coin::OnRepositionAhead()
 {
-	// Check if coin went behind camera (left of screen) - reposition ahead
-	float cameraLeftEdge = _cameraX;
-	float coinRightEdge = m_worldX + GetWidth();
-	
-	if (coinRightEdge < cameraLeftEdge - 50.0f) // 50px buffer behind camera
-	{
-		RepositionAhead(_cameraX, _screenWidth, _mapPixelWidth);
-	}
-}
-
-void Coin::RepositionAhead(float _cameraX, int _screenWidth, int _mapPixelWidth)
-{
-	// Calculate which map instance is ahead of camera (right side of screen + buffer)
-	float aheadX = _cameraX + _screenWidth + 100.0f; // 100px buffer ahead
-	int targetMapInstance = (int)floor(aheadX / _mapPixelWidth);
-	
-	// Make sure moving forward, not backward
-	if (targetMapInstance <= m_currentMapInstance)
-		targetMapInstance = m_currentMapInstance + 1;
-	
-	// Update to new map instance
-	m_currentMapInstance = targetMapInstance;
-	
-	// Reset position to base position in new map instance
-	float mapOffset = m_currentMapInstance * _mapPixelWidth;
-	m_worldX = m_baseX + mapOffset;
-	m_worldY = m_baseY;
-	
-	// Randomize coin texture on respawn
 	RandomCoin();
-	
-	// Reactivate coin
-	m_isActive = true;
-}
-
-void Coin::Render(Renderer* _renderer, Camera* _camera)
-{
-	if (!m_isActive)
-		return;
-	
-	float width = GetWidth();
-	float height = GetHeight();
-	
-	// Convert world position to screen position
-	float screenX = _camera ? _camera->WorldToScreenX(m_worldX) : m_worldX;
-	float screenY = m_worldY;
-	
-	// Only render if on screen (with buffer for smooth appearance)
-	Point screenSize = _renderer->GetWindowSize();
-	if (screenX < -width || screenX > screenSize.X + width)
-		return;
-	
-	Rect destRect(
-		(unsigned)screenX,
-		(unsigned)screenY,
-		(unsigned)(screenX + width),
-		(unsigned)(screenY + height));
-	
-	string currentAnim = "idle";
-	
-	Rect srcRect = m_animLoader->UpdateAnimation(currentAnim, Timing::Instance().GetDeltaTime());
-	Texture* currentTexture = m_animLoader->GetTexture(currentAnim);
-	
-	if (currentTexture)
-		_renderer->RenderTexture(currentTexture, srcRect, destRect);
 }
 
 void Coin::Reset()
 {
-	// Reset to original spawn position
-	m_worldX = m_baseX;
-	m_worldY = m_baseY;
-	m_currentMapInstance = 0;
-	m_isActive = true;
-	
-	// Randomize coin type on reset
+	WorldEntity::Reset();
 	RandomCoin();
 }
 

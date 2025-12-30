@@ -270,32 +270,6 @@ void Player::Render(Renderer* _renderer, Camera* _camera)
 		_renderer->RenderTexture(currentTexture, srcRect, destRect);
 }
 
-void Player::RenderCollisionBox(Renderer* _renderer, Camera* _camera)
-{
-	float collisionWidth = 16.0f * scale;
-	float collisionHeight = 16.0f * scale;
-	float collisionX = m_worldX + (GetWidth() - collisionWidth) * 0.5f;
-	float collisionY = m_posY + GetHeight() - collisionHeight;
-
-	// Convert world position to screen position using camera
-	float screenX = _camera ? _camera->WorldToScreenX(collisionX) : collisionX;
-	float screenY = collisionY;
-
-	SDL_Renderer* sdl = _renderer->GetRenderer();
-
-	// Set green color for player collision box
-	SDL_SetRenderDrawColor(sdl, 0, 255, 0, 255);
-
-	// Draw the collision box outline
-	SDL_Rect collisionRect;
-	collisionRect.x = (int)screenX;
-	collisionRect.y = (int)screenY;
-	collisionRect.w = (int)collisionWidth;
-	collisionRect.h = (int)collisionHeight;
-
-	SDL_RenderDrawRect(sdl, &collisionRect);
-}
-
 void Player::SetSpawnPosition(float x, float y)
 {
 	// x,y is the top-left of the spawn point in Tiled

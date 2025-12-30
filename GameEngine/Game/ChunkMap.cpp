@@ -471,44 +471,6 @@ void ChunkMap::RenderChunkWithOffset(Renderer* _renderer, Camera* _camera, const
     }
 }
 
-void ChunkMap::RenderCollisionBoxes(Renderer* _renderer, Camera* _camera)
-{
-    SDL_Renderer* sdl = _renderer->GetRenderer();
-    float cameraX = _camera ? _camera->GetX() : 0.0f;
-    
-    Point logicalSize = _renderer->GetLogicalSize();
-    int screenWidth = logicalSize.X;
-    
-    SDL_SetRenderDrawColor(sdl, 255, 0, 0, 255);
-    
-    for (const auto& chunk : m_activeChunks)
-    {
-        float chunkRight = chunk.worldOffsetX + m_chunkWidth;
-        if (chunkRight < cameraX || chunk.worldOffsetX > cameraX + screenWidth)
-            continue;
-        
-        if (!chunk.tileMap) continue;
-        
-        const auto& shapes = chunk.tileMap->GetCollisionShapes();
-        for (const auto& shape : shapes)
-        {
-            if (shape.type == CollisionType::Rectangle)
-            {
-                float shapeX = shape.x + chunk.worldOffsetX;
-                float shapeScreenX = _camera ? _camera->WorldToScreenX(shapeX) : shapeX;
-                
-                SDL_Rect rect;
-                rect.x = (int)shapeScreenX;
-                rect.y = (int)shape.y;
-                rect.w = (int)shape.width;
-                rect.h = (int)shape.height;
-                
-                SDL_RenderDrawRect(sdl, &rect);
-            }
-        }
-    }
-}
-
 bool ChunkMap::CheckCollisionTop(float _x, float _y, float _width, float _height, float& _outGroundY) const
 {
     float bestY = 100000.0f;

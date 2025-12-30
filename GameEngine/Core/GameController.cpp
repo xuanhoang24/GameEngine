@@ -208,8 +208,6 @@ void GameController::RunGame()
         RenderEntities();
         
         m_player->Render(m_renderer, m_camera);
-        m_player->RenderCollisionBox(m_renderer, m_camera);
-        m_chunkMap->RenderCollisionBoxes(m_renderer, m_camera);
         
         // Render UI
         m_gameUI->Render(m_renderer, m_score, m_player);

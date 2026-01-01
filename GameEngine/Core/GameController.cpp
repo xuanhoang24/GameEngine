@@ -61,6 +61,13 @@ void GameController::HandleInput(SDL_Event& e)
     {
         m_entityManager.ToggleSpatialGridDebug();
     }
+    
+    // F2 toggles collision box debug visualization (map + entities)
+    if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_F2)
+    {
+        m_collisionBoxDebug = !m_collisionBoxDebug;
+        m_entityManager.ToggleCollisionBoxDebug();
+    }
 
     m_gameUI->HandleInput(e, m_renderer);
 
@@ -149,6 +156,13 @@ void GameController::RunGame()
         // Render spatial grid debug overlay (F1)
         Point logicalSize = m_renderer->GetLogicalSize();
         m_entityManager.RenderSpatialGridDebug(m_renderer, m_camera, (float)logicalSize.X, (float)logicalSize.Y);
+        
+        // Render collision box debug overlay (F2)
+        if (m_collisionBoxDebug)
+        {
+            m_chunkMap->RenderCollisionDebug(m_renderer, m_camera);
+            m_entityManager.RenderCollisionBoxDebug(m_renderer, m_camera);
+        }
         
         m_gameUI->Render(m_renderer, m_score, hp, maxHp);
 

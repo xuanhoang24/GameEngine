@@ -59,6 +59,9 @@ Game/
 ├── Systems.h/cpp        - All systems (logic)
 ├── EntityManager.h/cpp  - Creates and manages entities
 ├── ChunkMap.h/cpp       - Infinite scrolling map
+├── SpatialGrid.h/cpp    - Spatial partitioning for collision
+├── Level.h/cpp          - Serializable level data
+├── Unit.h/cpp           - Serializable unit with object pooling
 └── GameUI.h/cpp         - UI rendering
 
 Core/
@@ -97,14 +100,42 @@ Input/                   - Keyboard, Mouse
 | `InputSystem` | Keyboard → player velocity |
 | `PhysicsSystem` | Apply gravity |
 | `JumpSystem` | Handle jump input |
+| `DashSystem` | Handle dash ability |
+| `PunchSystem` | Handle punch attack |
 | `MovementSystem` | Velocity → position |
 | `CollisionSystem` | Player vs world tiles |
 | `PatrolSystem` | Enemy patrol movement |
 | `ScrollSystem` | Infinite scroll repositioning |
 | `HealthSystem` | Invincibility and death timers |
-| `EntityCollisionSystem` | Player vs enemies/coins |
+| `EntityCollisionSystem` | Player vs enemies/coins (uses SpatialGrid) |
 | `AnimationSystem` | Update sprite animation |
 | `RenderSystem` | Draw sprites |
+
+---
+
+## Spatial Partitioning (SpatialGrid)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    WORLD SPACE                              │
+│  ┌────────┬────────┬────────┬────────┐                      │
+│  │ Cell   │ Cell   │ Cell   │ Cell   │                      │
+│  │ (0,0)  │ (1,0)  │ (2,0)  │ (3,0)  │                      │
+│  │        │ [P]    │        │        │  P = Player          │
+│  ├────────┼────────┼────────┼────────┤  E = Enemy           │
+│  │ Cell   │ Cell   │ Cell   │ Cell   │  C = Coin            │
+│  │ (0,1)  │ (1,1)  │ (2,1)  │ (3,1)  │                      │
+│  │        │ [E]    │ [C]    │        │                      │
+│  └────────┴────────┴────────┴────────┘                      │
+└─────────────────────────────────────────────────────────────┘
+
+Collision check: Player only checks cells (1,0), (2,0), (1,1), (2,1)
+Instead of checking ALL entities in the world → O(n) vs O(n²)
+```
+
+Two-phase collision detection:
+1. **Broad-phase**: AABB overlap test (fast rejection)
+2. **Narrow-phase**: Detailed collision (only if broad-phase passes)
 
 ### How a System Works
 

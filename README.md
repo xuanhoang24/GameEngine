@@ -38,6 +38,8 @@ This project is intended as a technical demo and learning exercise, not a full c
 - Patrol AI for enemies
 - Health system with invincibility frames
 - Collectibles with point values
+- Spatial partitioning grid for O(n) collision detection
+- Two-phase collision: broad-phase AABB + narrow-phase detailed checks
 
 ### Audio
 - 16-channel sound effect mixing
@@ -84,7 +86,7 @@ This project is intended as a technical demo and learning exercise, not a full c
 ```
 GameEngine/
 ├── Core/       - GameController, Timing, Singleton
-├── Game/       - Entity, Components, Systems, ChunkMap, GameUI
+├── Game/       - Entity, Components, Systems, ChunkMap, GameUI, SpatialGrid, Level, Unit
 ├── Graphics/   - Renderer, Camera, TileMap, AnimatedSpriteLoader, Texture
 ├── Audio/      - AudioController, Song, SoundEffect
 ├── Input/      - InputController, Keyboard, Mouse, Controller

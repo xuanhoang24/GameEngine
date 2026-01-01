@@ -56,6 +56,9 @@ public:
     
     int GetChunkPixelWidth() const;
     int GetMapPixelHeight() const;
+    
+    // Debug rendering for collision shapes
+    void RenderCollisionDebug(Renderer* _renderer, Camera* _camera);
 
 private:
     void SpawnNextChunk();

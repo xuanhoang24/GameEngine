@@ -208,6 +208,43 @@ void EntityManager::RenderSpatialGridDebug(Renderer* renderer, Camera* camera, f
     m_entityCollision.RenderDebug(renderer, camera, viewportWidth, viewportHeight);
 }
 
+void EntityManager::RenderCollisionBoxDebug(Renderer* renderer, Camera* camera)
+{
+    if (!m_collisionBoxDebugEnabled) return;
+    
+    for (auto* entity : m_entities)
+    {
+        if (!entity || !entity->IsActive()) continue;
+        
+        auto* transform = entity->GetComponent<TransformComponent>();
+        auto* collision = entity->GetComponent<CollisionComponent>();
+        if (!transform || !collision) continue;
+        
+        float worldX = transform->worldX + collision->offsetX;
+        float worldY = transform->worldY + collision->offsetY;
+        float screenX = camera ? camera->WorldToScreenX(worldX) : worldX;
+        float screenY = worldY;
+        
+        // Different colors for different collider types
+        if (entity->HasComponent<PlayerTag>())
+            renderer->SetDrawColor(Color(0, 255, 0, 255));  // Green for player
+        else if (collision->type == ColliderType::Enemy)
+            renderer->SetDrawColor(Color(255, 0, 0, 255));  // Red for enemies
+        else if (collision->type == ColliderType::Coin)
+            renderer->SetDrawColor(Color(255, 255, 0, 255));  // Yellow for coins
+        else
+            renderer->SetDrawColor(Color(255, 255, 255, 255));  // White for others
+        
+        Rect collisionRect(
+            static_cast<unsigned int>(screenX),
+            static_cast<unsigned int>(screenY),
+            static_cast<unsigned int>(screenX + collision->boxWidth),
+            static_cast<unsigned int>(screenY + collision->boxHeight)
+        );
+        renderer->RenderRectangle(collisionRect);
+    }
+}
+
 void EntityManager::ProcessDestroys()
 {
     for (auto* entity : m_pendingDestroy)

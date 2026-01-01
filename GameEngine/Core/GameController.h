@@ -34,6 +34,7 @@ private:
     GameUI* m_gameUI = nullptr;
     int m_score = 0;
     bool m_quit = false;
+    bool m_collisionBoxDebug = false;
 };
 
 #endif

@@ -553,3 +553,45 @@ bool ChunkMap::GetPlayerSpawnPoint(float& outX, float& outY) const
     outY = 0.0f;
     return false;
 }
+
+void ChunkMap::RenderCollisionDebug(Renderer* _renderer, Camera* _camera)
+{
+    if (!_renderer) return;
+    
+    float cameraX = _camera ? _camera->GetX() : 0.0f;
+    Point logicalSize = _renderer->GetLogicalSize();
+    int screenWidth = logicalSize.X;
+    
+    // Blue color for map collision shapes
+    _renderer->SetDrawColor(Color(0, 0, 255, 255));
+    
+    for (const auto& chunk : m_activeChunks)
+    {
+        if (!chunk.tileMap) continue;
+        
+        // Skip chunks not visible on screen
+        float chunkRight = chunk.worldOffsetX + m_chunkWidth;
+        if (chunkRight < cameraX || chunk.worldOffsetX > cameraX + screenWidth)
+            continue;
+        
+        const auto& shapes = chunk.tileMap->GetCollisionShapes();
+        for (const auto& shape : shapes)
+        {
+            if (shape.type == CollisionType::Rectangle)
+            {
+                float worldX = shape.x + chunk.worldOffsetX;
+                float worldY = shape.y;
+                float screenX = worldX - cameraX;
+                float screenY = worldY;
+                
+                Rect collisionRect(
+                    static_cast<unsigned int>(screenX),
+                    static_cast<unsigned int>(screenY),
+                    static_cast<unsigned int>(screenX + shape.width),
+                    static_cast<unsigned int>(screenY + shape.height)
+                );
+                _renderer->RenderRectangle(collisionRect);
+            }
+        }
+    }
+}

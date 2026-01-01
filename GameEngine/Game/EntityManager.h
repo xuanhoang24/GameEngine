@@ -57,6 +57,11 @@ public:
     void ToggleSpatialGridDebug() { m_entityCollision.ToggleDebugDraw(); }
     bool IsSpatialGridDebugEnabled() const { return m_entityCollision.IsDebugDrawEnabled(); }
     void RenderSpatialGridDebug(Renderer* renderer, Camera* camera, float viewportWidth, float viewportHeight);
+    
+    // Debug visualization for collision boxes (F2)
+    void ToggleCollisionBoxDebug() { m_collisionBoxDebugEnabled = !m_collisionBoxDebugEnabled; }
+    bool IsCollisionBoxDebugEnabled() const { return m_collisionBoxDebugEnabled; }
+    void RenderCollisionBoxDebug(Renderer* renderer, Camera* camera);
 
     void Reset();
     void Clear();
@@ -81,6 +86,8 @@ private:
     RenderSystem m_render;
 
     void ProcessDestroys();
+    
+    bool m_collisionBoxDebugEnabled = false;
 };
 
 #endif

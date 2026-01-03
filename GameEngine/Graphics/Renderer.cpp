@@ -19,6 +19,10 @@ Renderer::~Renderer()
 void Renderer::Initialize()
 {
     M_ASSERT((SDL_Init(SDL_INIT_EVERYTHING) >= 0), "SDL initialization failed.");
+    
+    // Set logical size mode to overscan to fill the entire window
+    SDL_SetHint(SDL_HINT_RENDER_LOGICAL_SIZE_MODE, "overscan");
+    
     SDL_GetDisplayBounds(0, &m_srcRect);
     m_window = SDL_CreateWindow("Platformer Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         1280, 720, SDL_WINDOW_SHOWN);

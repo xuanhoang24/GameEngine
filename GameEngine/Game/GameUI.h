@@ -25,6 +25,7 @@ public:
     virtual ~GameUI();
 
     void Initialize();
+    void Update(float _deltaTime);
     void Render(Renderer* _renderer, int _score, int _health, int _maxHealth);
     void HandleInput(SDL_Event& _event, Renderer* _renderer);
     
@@ -45,6 +46,8 @@ private:
     void RenderPauseMenu(Renderer* _renderer);
     void RenderGameOver(Renderer* _renderer, int _score);
     void RenderHearts(Renderer* _renderer, int _health, int _maxHealth);
+    void RenderParallaxBackground(Renderer* _renderer);
+    void AddBackgroundLayer(const string& _path, float _parallaxFactor);
     
     // Convert screen coordinates to logical coordinates
     void ConvertToLogicalCoords(Renderer* _renderer, int& mouseX, int& mouseY);
@@ -54,6 +57,18 @@ private:
     
     // Heart animation
     AnimatedSpriteLoader* m_heartAnimLoader;
+    
+    // Parallax background
+    struct BackgroundLayer
+    {
+        SDL_Texture* texture = nullptr;
+        int width = 0;
+        int height = 0;
+        float parallaxFactor = 1.0f;
+    };
+    
+    vector<BackgroundLayer> m_backgroundLayers;
+    float m_cameraX;
     
     UIState m_state;
     

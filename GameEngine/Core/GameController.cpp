@@ -118,6 +118,8 @@ void GameController::RunGame()
 
         while (SDL_PollEvent(&m_event)) HandleInput(m_event);
 
+        m_gameUI->Update(t.GetDeltaTime());
+
         int hp = 0, maxHp = 3;
         bool dead = false, fullyDead = false;
         if (m_player)

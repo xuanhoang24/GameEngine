@@ -4,6 +4,7 @@
 A 2D game engine built with C++ and SDL2, using an Entity Component System (ECS) architecture.\
 This project is intended as a technical demo and learning exercise, not a full commercial game.
 
+[Watch the demo video](https://www.youtube.com/watch?v=Go6RMoumZYc&feature=youtu.be)
 
 ## Features
 
